@@ -69,6 +69,7 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
+                .passwordVersion(user.getPasswordVersion() == null ? 1 : user.getPasswordVersion() + 1)
                 .createdAt(user.getCreatedAt())
                 .build());
     }

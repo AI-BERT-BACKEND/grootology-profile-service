@@ -6,6 +6,7 @@ import com.aibert.dosw.domain.exceptions.InvalidTokenException;
 import com.aibert.dosw.domain.exceptions.UserNotFoundException;
 import com.aibert.dosw.domain.model.user.EmailVerificationToken;
 import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
 import com.aibert.dosw.domain.ports.in.RegisterUseCase;
 import com.aibert.dosw.domain.ports.out.EmailServicePort;
 import com.aibert.dosw.domain.ports.out.TokenRepositoryPort;
@@ -31,7 +32,7 @@ public class RegisterService implements RegisterUseCase {
     private String baseUrl;
 
     @Override
-    public void register(RegisterRequestDTO request) {
+    public RegisterResponseDTO register(RegisterRequestDTO request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new IllegalArgumentException("Las contraseñas no coinciden");
         }
@@ -49,6 +50,10 @@ public class RegisterService implements RegisterUseCase {
                 .build());
 
         sendVerificationToken(user);
+        return RegisterResponseDTO.builder()
+                .id(user.getId())
+                .message("Registro exitoso. Revisa tu correo para verificar tu cuenta.")
+                .build();
     }
 
     @Override

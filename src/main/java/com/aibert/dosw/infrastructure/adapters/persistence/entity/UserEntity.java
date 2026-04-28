@@ -34,6 +34,7 @@ public class UserEntity {
     private Integer currentSemester;
     private Integer weeklyHours;
     private String profilePhotoUrl;
+    private Integer passwordVersion;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

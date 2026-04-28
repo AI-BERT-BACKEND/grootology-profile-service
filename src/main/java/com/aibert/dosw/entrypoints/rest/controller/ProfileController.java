@@ -3,6 +3,7 @@ package com.aibert.dosw.entrypoints.rest.controller;
 import com.aibert.dosw.application.dto.request.AcademicProfileDTO;
 import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
 import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
+import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
 import com.aibert.dosw.domain.ports.in.AcademicProfileUseCase;
 import com.aibert.dosw.domain.ports.in.UpdateProfileUseCase;
 import jakarta.validation.Valid;
@@ -22,11 +23,10 @@ public class ProfileController {
     private final UpdateProfileUseCase updateProfileUseCase;
 
     @PutMapping("/{userId}/academic")
-    public ResponseEntity<Map<String, String>> saveAcademicProfile(
+    public ResponseEntity<AcademicProfileResponseDTO> saveAcademicProfile(
             @PathVariable Long userId,
             @Valid @RequestBody AcademicProfileDTO dto) {
-        academicProfileUseCase.saveAcademicProfile(userId, dto);
-        return ResponseEntity.ok(Map.of("message", "Perfil académico guardado exitosamente."));
+        return ResponseEntity.ok(academicProfileUseCase.saveAcademicProfile(userId, dto));
     }
 
     @PutMapping("/{userId}")
@@ -43,6 +43,6 @@ public class ProfileController {
             @PathVariable Long userId,
             @Valid @RequestBody PasswordChangeDTO dto) {
         updateProfileUseCase.changePassword(userId, dto);
-        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada exitosamente."));
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada. Todas las sesiones han sido cerradas."));
     }
 }
