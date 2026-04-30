@@ -4,16 +4,17 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Builder
 public class User {
-    private Long id;
+    private UUID id;
     private String fullName;
     private String email;
     private String password;
     private boolean verified;
-    private boolean termsAccepted;
+    private Role role;
     private String career;
     private Integer currentSemester;
     private Integer weeklyHours;

@@ -1,12 +1,13 @@
 package com.aibert.dosw.application.service;
 
 import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
+import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
 import com.aibert.dosw.domain.exceptions.EmailAlreadyRegisteredException;
 import com.aibert.dosw.domain.exceptions.InvalidTokenException;
 import com.aibert.dosw.domain.exceptions.UserNotFoundException;
 import com.aibert.dosw.domain.model.user.EmailVerificationToken;
+import com.aibert.dosw.domain.model.user.Role;
 import com.aibert.dosw.domain.model.user.User;
-import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
 import com.aibert.dosw.domain.ports.in.RegisterUseCase;
 import com.aibert.dosw.domain.ports.out.EmailServicePort;
 import com.aibert.dosw.domain.ports.out.TokenRepositoryPort;
@@ -45,13 +46,14 @@ public class RegisterService implements RegisterUseCase {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .verified(false)
-                .termsAccepted(request.isTermsAccepted())
+                .role(Role.ESTUDIANTE)
                 .createdAt(LocalDateTime.now())
                 .build());
 
         sendVerificationToken(user);
         return RegisterResponseDTO.builder()
                 .id(user.getId())
+                .role(user.getRole().name())
                 .message("Registro exitoso. Revisa tu correo para verificar tu cuenta.")
                 .build();
     }
@@ -74,7 +76,7 @@ public class RegisterService implements RegisterUseCase {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .verified(true)
-                .termsAccepted(user.isTermsAccepted())
+                .role(user.getRole())
                 .career(user.getCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())

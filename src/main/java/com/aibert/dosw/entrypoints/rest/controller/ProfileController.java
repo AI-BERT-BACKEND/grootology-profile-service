@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -24,14 +25,14 @@ public class ProfileController {
 
     @PutMapping("/{userId}/academic")
     public ResponseEntity<AcademicProfileResponseDTO> saveAcademicProfile(
-            @PathVariable Long userId,
+            @PathVariable UUID userId,
             @Valid @RequestBody AcademicProfileDTO dto) {
         return ResponseEntity.ok(academicProfileUseCase.saveAcademicProfile(userId, dto));
     }
 
     @PutMapping("/{userId}")
     public ResponseEntity<Map<String, String>> updateProfile(
-            @PathVariable Long userId,
+            @PathVariable UUID userId,
             @Valid @RequestPart(value = "data") UpdateProfileDTO dto,
             @RequestPart(value = "photo", required = false) MultipartFile photo) {
         updateProfileUseCase.updateProfile(userId, dto, photo);
@@ -40,7 +41,7 @@ public class ProfileController {
 
     @PutMapping("/{userId}/password")
     public ResponseEntity<Map<String, String>> changePassword(
-            @PathVariable Long userId,
+            @PathVariable UUID userId,
             @Valid @RequestBody PasswordChangeDTO dto) {
         updateProfileUseCase.changePassword(userId, dto);
         return ResponseEntity.ok(Map.of("message", "Contraseña actualizada. Todas las sesiones han sido cerradas."));

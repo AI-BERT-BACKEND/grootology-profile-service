@@ -4,7 +4,9 @@ import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
 import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 public interface UpdateProfileUseCase {
-    void updateProfile(Long userId, UpdateProfileDTO dto, MultipartFile photo);
-    void changePassword(Long userId, PasswordChangeDTO dto);
+    void updateProfile(UUID userId, UpdateProfileDTO dto, MultipartFile photo);
+    void changePassword(UUID userId, PasswordChangeDTO dto);
 }

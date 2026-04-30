@@ -9,6 +9,8 @@ import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AcademicProfileService implements AcademicProfileUseCase {
@@ -16,7 +18,7 @@ public class AcademicProfileService implements AcademicProfileUseCase {
     private final UserRepositoryPort userRepository;
 
     @Override
-    public AcademicProfileResponseDTO saveAcademicProfile(Long userId, AcademicProfileDTO dto) {
+    public AcademicProfileResponseDTO saveAcademicProfile(UUID userId, AcademicProfileDTO dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -26,7 +28,7 @@ public class AcademicProfileService implements AcademicProfileUseCase {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .verified(user.isVerified())
-                .termsAccepted(user.isTermsAccepted())
+                .role(user.getRole())
                 .career(dto.getCareer())
                 .currentSemester(dto.getCurrentSemester())
                 .weeklyHours(dto.getWeeklyHours())

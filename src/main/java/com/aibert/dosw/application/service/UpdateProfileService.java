@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UpdateProfileService implements UpdateProfileUseCase {
@@ -21,7 +23,7 @@ public class UpdateProfileService implements UpdateProfileUseCase {
     private final FileUploadService fileUploadService;
 
     @Override
-    public void updateProfile(Long userId, UpdateProfileDTO dto, MultipartFile photo) {
+    public void updateProfile(UUID userId, UpdateProfileDTO dto, MultipartFile photo) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -36,7 +38,7 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .verified(user.isVerified())
-                .termsAccepted(user.isTermsAccepted())
+                .role(user.getRole())
                 .career(user.getCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())
@@ -46,7 +48,7 @@ public class UpdateProfileService implements UpdateProfileUseCase {
     }
 
     @Override
-    public void changePassword(Long userId, PasswordChangeDTO dto) {
+    public void changePassword(UUID userId, PasswordChangeDTO dto) {
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
             throw new IllegalArgumentException("Las contraseñas no coinciden");
         }
@@ -64,7 +66,7 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .email(user.getEmail())
                 .password(passwordEncoder.encode(dto.getNewPassword()))
                 .verified(user.isVerified())
-                .termsAccepted(user.isTermsAccepted())
+                .role(user.getRole())
                 .career(user.getCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())

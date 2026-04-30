@@ -4,13 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Builder
 public class EmailVerificationToken {
     private Long id;
     private String token;
-    private Long userId;
+    private UUID userId;
     private LocalDateTime expiresAt;
     private boolean used;
 }

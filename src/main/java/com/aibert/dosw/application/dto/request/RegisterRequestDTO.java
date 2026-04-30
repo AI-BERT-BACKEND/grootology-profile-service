@@ -23,7 +23,4 @@ public class RegisterRequestDTO {
 
     @NotBlank
     private String confirmPassword;
-
-    @AssertTrue(message = "Debes aceptar los términos y condiciones")
-    private boolean termsAccepted;
 }
