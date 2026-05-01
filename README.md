@@ -1,6 +1,6 @@
-# Nombre del Proyecto
+# AI.BERT - Profile
 
-> Breve descripción de una línea sobre qué hace el sistema y qué problema resuelve.
+> Microservicio de autenticación  para A.IBERT — maneja la configuración del perfil académico y la edición de datos personales del estudiante.
 
 ---
 
@@ -26,23 +26,19 @@
 
 ## Resumen Ejecutivo
 
-Descripción breve del proyecto:
+* Problema: Los estudiantes necesitan un lugar centralizado donde configurar su información académica y personal, datos que son consumidos por el motor de planificación para personalizar su experiencia.
+  
+* Solución: Microservicio independiente que gestiona el perfil académico (carrera, semestre, horas disponibles) y el perfil personal (nombre, foto, contraseña) del estudiante autenticado.
 
-- Problema a resolver.
-- Solución propuesta.
-- Usuarios objetivo.
-- Impacto esperado.
+* Usuarios objetivo: Estudiantes universitarios de la ECI.
+  
 
 ## Alcance
 
 ### Incluye
-- Funcionalidad 1
-- Funcionalidad 2
-- Funcionalidad 3
-
-### No Incluye
-- Funcionalidades futuras
-- Restricciones del proyecto
+- Configuración del perfil académico (carrera, semestre, horas disponibles)
+- Edición del perfil personal (nombre y foto de perfil)
+- Cambio de contraseña desde dentro de la aplicación
 
 ---
 
@@ -52,11 +48,10 @@ Descripción breve del proyecto:
 
 | Integrante | Rol | Responsabilidades |
 |-----------|------|------------------|
-| Sheldon Cooper | Arquitecto | Diseño del sistema |
-| Walter White | Backend | APIs y lógica |
-| Tony Stark | DevOps | Infraestructura |
-| Jesse Pinkman | Frontend | UI/UX |
-| R2-D2 | QA | Testing |
+| Mariana Parra | Lider |  Revisión, coordinación con otros equipos|
+| Dana Leal | Backend | UI/UX |
+| Andres Sabogal | DevOps | Infraestructura |
+| Nicolas Parrado| Arquitectura | Diseño del sistema |
 
 ---
 
@@ -64,13 +59,13 @@ Descripción breve del proyecto:
 
 ## Objetivo General
 
-Construir un sistema que ...
+Construir un microservicio que centralice la gestión del perfil del estudiante y exponga los datos académicos al motor de planificación para personalizar la distribución de tareas.
 
 ## Objetivos Específicos
 
-- Objetivo 1
-- Objetivo 2
-- Objetivo 3
+- Persistir y actualizar el perfil académico del estudiante (carrera, semestre, horas disponibles)
+- Permitir la edición de datos personales incluyendo foto de perfil
+- Gestionar el cambio de contraseña invalidando todas las sesiones activas del usuario
 
 ---
 
@@ -78,22 +73,20 @@ Construir un sistema que ...
 
 ## Contexto
 
-Descripción del contexto.
+A.IBERT es una plataforma de planificación académica compuesta por microservicios independientes. Para que funcionen de forma coordinada, todos necesitan identificar al usuario que hace cada petición de forma segura y sin acoplar su lógica de autenticación.
 
 ## Problema
 
-Problema principal identificado.
+Sin un perfil académico configurado, el motor de planificación no tiene los parámetros necesarios (semestre, horas disponibles, carrera) para generar un plan de estudio personalizado.
 
 ## Dificultades Actuales
 
-- Dificultad 1
-- Dificultad 2
-- Dificultad 3
+- Los datos del perfil están dispersos sin un microservicio que los centralice
+
 
 ## Solución Propuesta
 
-Descripción general del enfoque.
-
+Un microservicio dedicado (profile-service) que persiste y expone los datos del perfil académico y personal del estudiante, con endpoints consumibles por el motor de planificación vía Feign Client.
 ---
 
 #  Requerimientos
@@ -104,24 +97,14 @@ Descripción general del enfoque.
 
 | ID | Requerimiento | Módulo |
 |----|---------------|--------|
-| RF-01 | Login de usuarios | Seguridad |
-| RF-02 | Gestión de datos | Core |
-
----
-
-## Requerimientos No Funcionales
-
-| ID | Requerimiento | Métrica |
-|----|----------------|---------|
-| RNF-01 | Disponibilidad | 99.9% |
-| RNF-02 | Tiempo respuesta | < 2s |
-| RNF-03 | Seguridad | JWT / OAuth |
+| R03 | Configuración del perfil académico | Perfil |
+| R04 | Edición del perfil personal y cambio de contraseña| Perfil |
 
 ---
 
 ##  Análisis de Requerimientos
 
-- [Documento de análisis](docs/requisitos.md)
+- [Documento de análisis](https://docs.google.com/document/d/1MUhO_lg_SAV1FV18G1dWbMSLK4jfOcMa/edit?usp=sharing&ouid=111980033368663407661&rtpof=true&sd=true)
 
 ---
 
@@ -129,12 +112,15 @@ Descripción general del enfoque.
 
 ## Arquitectura General
 
-Descripción de arquitectura usada:
+El profile-service forma parte de una arquitectura de microservicios. Recibe peticiones del frontend a través del API Gateway (puerto 8000), que valida el JWT antes de redirigir al servicio.
 
-- Monolítica / Microservicios
-- Patrón MVC
-- Clean Architecture
-- Hexagonal (si aplica)
+Frontend (React) → API Gateway :8000 → profile-service :8001 → PostgreSQL.
+
+Patrón: Arquitectura hexagonal (entrypoints → application → domain → infrastructure)
+
+El JWT es validado por el Gateway antes de llegar al servicio
+
+
 
 ---
 
@@ -159,23 +145,20 @@ Descripción de arquitectura usada:
 ## Contexto
 - [Diagrama de contexto](docs/diagramas/contexto.png)
 
-## Casos de Uso
-- [Casos de uso](docs/diagramas/casos-uso.png)
+
 
 ## Diagrama de Clases
-- [Diagrama de clases](docs/diagramas/clases.png)
+![DiagramadeClases.png](docs/uml/DiagramadeClases.png)
 
-## Componentes
-- [Diagrama de componentes](docs/diagramas/componentes.png)
+## Componentes General
 
-## Entidad Relación
-- [ER Diagram](docs/diagramas/er.png)
+![ComponentesGeneral.png](docs/uml/ComponentesGeneral.png)
 
-## Secuencia
+## Componentes especifico
 
-- [01 Registro usuario](docs/secuencia/registro.md)
-- [02 Login](docs/secuencia/login.md)
-- [03 Gestión principal](docs/secuencia/modulo.md)
+![ComponentesEspecifico.png](docs/uml/ComponentesEspecifico.png)
+
+
 
 ---
 
@@ -190,14 +173,7 @@ Descripción de arquitectura usada:
 | Sprint | Objetivo | Estado |
 |-------|----------|--------|
 | Sprint 1 | Setup proyecto | ✅ |
-| Sprint 2 | Core features | 🚧 |
 
-## Riesgos
-
-| Riesgo | Impacto | Mitigación |
-|--------|---------|------------|
-| Retrasos | Alto | Buffer |
-| Bugs críticos | Medio | Testing |
 
 ---
 
@@ -207,8 +183,7 @@ Descripción de arquitectura usada:
 
 - Unitarias
 - Integración
-- End to End
-- Carga
+
 
 ## Reporte
 
@@ -218,7 +193,7 @@ Descripción de arquitectura usada:
 
 # Cobertura
 
-Reporte generado con **JaCoCo** y analizado con **SonarCloud**
+Reporte generado con **JaCoCo** y analizado con **SonarQube**
 
 | Métrica | Cubierto | Total | Cobertura |
 |---|---|---|---|
@@ -238,11 +213,8 @@ Reporte generado con **JaCoCo** y analizado con **SonarCloud**
 #  Demo
 
 ## Video Demo
-- [Demo módulo](link-demo)
+- https://youtu.be/yeUNeGnnxpw
 
-## Capturas
-
-Agregar screenshots aquí.
 
 ---
 
