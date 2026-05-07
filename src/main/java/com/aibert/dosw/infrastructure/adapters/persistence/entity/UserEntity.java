@@ -1,6 +1,6 @@
 package com.aibert.dosw.infrastructure.adapters.persistence.entity;
 
-import com.aibert.dosw.domain.model.user.Role;
+import com.aibert.dosw.domain.model.user.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,9 +33,23 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
-    private String career;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private Career career;
+
     private Integer currentSemester;
     private Integer weeklyHours;
+    private Double currentGpa;
+    private Integer currentSubjects;
+
+    @Enumerated(EnumType.STRING)
+    private AcademicGoal academicGoal;
+
+    private boolean currentlyWorking;
+    private boolean profileComplete;
     private String profilePhotoUrl;
     private Integer passwordVersion;
 
