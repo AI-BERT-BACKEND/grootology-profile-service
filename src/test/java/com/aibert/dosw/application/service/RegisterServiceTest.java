@@ -45,6 +45,8 @@ class RegisterServiceTest {
         when(request.getPassword()).thenReturn("Pass1234");
         when(request.getConfirmPassword()).thenReturn("Pass1234");
         when(request.getFullName()).thenReturn("Nuevo Usuario");
+        when(request.getCareer()).thenReturn(com.aibert.dosw.domain.model.user.Career.INGENIERIA_SISTEMAS);
+        when(request.getSemester()).thenReturn(3);
 
         when(userRepository.existsByEmail(any())).thenReturn(false);
         when(passwordEncoder.encode(any())).thenReturn("hashed");
@@ -52,6 +54,7 @@ class RegisterServiceTest {
                 .id(UUID.randomUUID())
                 .email("nuevo@mail.escuelaing.edu.co")
                 .role(Role.ESTUDIANTE)
+                .status(com.aibert.dosw.domain.model.user.UserStatus.ACTIVO)
                 .build());
         when(tokenRepository.save(any())).thenReturn(null);
         doNothing().when(emailService).sendVerificationEmail(any(), any());
