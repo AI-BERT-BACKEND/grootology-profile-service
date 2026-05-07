@@ -29,10 +29,6 @@ public class UpdateProfileService implements UpdateProfileUseCase {
 
         String photoUrl = user.getProfilePhotoUrl();
         if (photo != null && !photo.isEmpty()) {
-            String contentType = photo.getContentType();
-            if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
-                throw new IllegalArgumentException("Solo se aceptan archivos JPG o PNG");
-            }
             photoUrl = fileUploadService.upload(photo);
         }
 
@@ -43,17 +39,10 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .password(user.getPassword())
                 .verified(user.isVerified())
                 .role(user.getRole())
-                .status(user.getStatus())
                 .career(user.getCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())
-                .currentGpa(user.getCurrentGpa())
-                .currentSubjects(user.getCurrentSubjects())
-                .academicGoal(user.getAcademicGoal())
-                .currentlyWorking(user.isCurrentlyWorking())
-                .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(photoUrl)
-                .passwordVersion(user.getPasswordVersion())
                 .createdAt(user.getCreatedAt())
                 .build());
     }
@@ -78,15 +67,9 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .password(passwordEncoder.encode(dto.getNewPassword()))
                 .verified(user.isVerified())
                 .role(user.getRole())
-                .status(user.getStatus())
                 .career(user.getCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())
-                .currentGpa(user.getCurrentGpa())
-                .currentSubjects(user.getCurrentSubjects())
-                .academicGoal(user.getAcademicGoal())
-                .currentlyWorking(user.isCurrentlyWorking())
-                .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
                 .passwordVersion(user.getPasswordVersion() == null ? 1 : user.getPasswordVersion() + 1)
                 .createdAt(user.getCreatedAt())

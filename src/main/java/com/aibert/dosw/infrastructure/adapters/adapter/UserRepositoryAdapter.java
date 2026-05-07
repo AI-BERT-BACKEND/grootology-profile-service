@@ -1,17 +1,14 @@
 package com.aibert.dosw.infrastructure.adapters.adapter;
 
 import com.aibert.dosw.domain.model.user.User;
-import com.aibert.dosw.domain.model.user.UserStatus;
 import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
 import com.aibert.dosw.infrastructure.adapters.persistence.mapper.UserPersistenceMapper;
 import com.aibert.dosw.infrastructure.adapters.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -38,21 +35,5 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public boolean existsByEmail(String email) {
         return jpaRepository.existsByEmail(email);
-    }
-
-    @Override
-    public List<User> findAll() {
-        return jpaRepository.findAll().stream().map(mapper::toDomain).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<User> findByFilters(String name, String email, UserStatus status) {
-        return jpaRepository.findByFilters(name, email, status)
-                .stream().map(mapper::toDomain).collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteById(UUID id) {
-        jpaRepository.deleteById(id);
     }
 }

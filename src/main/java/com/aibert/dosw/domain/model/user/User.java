@@ -15,15 +15,9 @@ public class User {
     private String password;
     private boolean verified;
     private Role role;
-    private UserStatus status;
-    private Career career;
+    private String career;
     private Integer currentSemester;
     private Integer weeklyHours;
-    private Double currentGpa;
-    private Integer currentSubjects;
-    private AcademicGoal academicGoal;
-    private boolean currentlyWorking;
-    private boolean profileComplete;
     private String profilePhotoUrl;
     private Integer passwordVersion;
     private LocalDateTime createdAt;
