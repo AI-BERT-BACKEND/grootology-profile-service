@@ -47,6 +47,10 @@ public class RegisterService implements RegisterUseCase {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .verified(false)
                 .role(Role.ESTUDIANTE)
+                .status(com.aibert.dosw.domain.model.user.UserStatus.ACTIVO)
+                .career(request.getCareer())
+                .currentSemester(request.getSemester())
+                .profileComplete(false)
                 .createdAt(LocalDateTime.now())
                 .build());
 

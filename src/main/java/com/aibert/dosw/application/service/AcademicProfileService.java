@@ -29,16 +29,22 @@ public class AcademicProfileService implements AcademicProfileUseCase {
                 .password(user.getPassword())
                 .verified(user.isVerified())
                 .role(user.getRole())
-                .career(dto.getCareer())
-                .currentSemester(dto.getCurrentSemester())
+                .status(user.getStatus())
+                .career(dto.getCareer() != null ? dto.getCareer() : user.getCareer())
+                .currentSemester(dto.getCurrentSemester() != null ? dto.getCurrentSemester() : user.getCurrentSemester())
                 .weeklyHours(dto.getWeeklyHours())
+                .currentGpa(dto.getCurrentGpa())
+                .currentSubjects(dto.getCurrentSubjects())
+                .academicGoal(dto.getAcademicGoal())
+                .currentlyWorking(dto.getCurrentlyWorking())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
+                .profileComplete(true)
                 .createdAt(user.getCreatedAt())
                 .build());
 
         return AcademicProfileResponseDTO.builder()
-                .career(dto.getCareer())
-                .currentSemester(dto.getCurrentSemester())
+                .career(dto.getCareer() != null ? dto.getCareer().name() : user.getCareer().name())
+                .currentSemester(dto.getCurrentSemester() != null ? dto.getCurrentSemester() : user.getCurrentSemester())
                 .weeklyHours(dto.getWeeklyHours())
                 .build();
     }
