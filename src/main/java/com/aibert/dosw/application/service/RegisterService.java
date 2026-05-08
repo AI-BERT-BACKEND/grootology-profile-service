@@ -81,9 +81,11 @@ public class RegisterService implements RegisterUseCase {
                 .password(user.getPassword())
                 .verified(true)
                 .role(user.getRole())
+                .status(user.getStatus())
                 .career(user.getCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())
+                .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
                 .createdAt(user.getCreatedAt())
                 .build());
