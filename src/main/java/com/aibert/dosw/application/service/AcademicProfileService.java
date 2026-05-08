@@ -46,6 +46,10 @@ public class AcademicProfileService implements AcademicProfileUseCase {
                 .career(dto.getCareer() != null ? dto.getCareer().name() : user.getCareer().name())
                 .currentSemester(dto.getCurrentSemester() != null ? dto.getCurrentSemester() : user.getCurrentSemester())
                 .weeklyHours(dto.getWeeklyHours())
+                .currentGpa(dto.getCurrentGpa())
+                .currentSubjects(dto.getCurrentSubjects())
+                .academicGoal(dto.getAcademicGoal())
+                .currentlyWorking(dto.getCurrentlyWorking())
                 .build();
     }
 }

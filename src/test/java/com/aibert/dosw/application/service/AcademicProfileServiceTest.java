@@ -1,0 +1,73 @@
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.AcademicProfileDTO;
+import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.*;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class AcademicProfileServiceTest {
+
+    @Mock private UserRepositoryPort userRepository;
+    @InjectMocks private AcademicProfileService academicProfileService;
+
+    private final UUID userId = UUID.randomUUID();
+
+    private User buildUser() {
+        return User.builder()
+                .id(userId)
+                .fullName("Test User")
+                .email("test@mail.escuelaing.edu.co")
+                .password("hashed")
+                .verified(true)
+                .role(Role.ESTUDIANTE)
+                .status(UserStatus.ACTIVO)
+                .career(Career.INGENIERIA_SISTEMAS)
+                .currentSemester(3)
+                .profileComplete(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Test
+    void saveAcademicProfile_exitoso_retornaDatos() {
+        AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
+        when(dto.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
+        when(dto.getCurrentSemester()).thenReturn(3);
+        when(dto.getWeeklyHours()).thenReturn(20);
+        when(dto.getCurrentGpa()).thenReturn(3.8);
+        when(dto.getCurrentSubjects()).thenReturn(5);
+        when(dto.getAcademicGoal()).thenReturn(AcademicGoal.MEJORAR_PROMEDIO);
+        when(dto.getCurrentlyWorking()).thenReturn(false);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, dto);
+
+        assertNotNull(response);
+        assertEquals(20, response.getWeeklyHours());
+        assertEquals(3.8, response.getCurrentGpa());
+    }
+
+    @Test
+    void saveAcademicProfile_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
+        assertThrows(UserNotFoundException.class, () -> academicProfileService.saveAcademicProfile(userId, dto));
+    }
+}
