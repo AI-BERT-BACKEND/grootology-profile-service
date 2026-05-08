@@ -1,5 +1,6 @@
 package com.aibert.dosw.application.dto.request;
 
+import com.aibert.dosw.domain.model.user.Career;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 
@@ -15,6 +16,13 @@ public class RegisterRequestDTO {
     @Email
     @Pattern(regexp = "^[^@]+@mail\\.escuelaing\\.edu\\.co$", message = "Debe ser un correo institucional @mail.escuelaing.edu.co")
     private String email;
+
+    @NotNull
+    private Career career;
+
+    @NotNull
+    @Min(1) @Max(10)
+    private Integer semester;
 
     @NotBlank
     @Size(min = 8)
