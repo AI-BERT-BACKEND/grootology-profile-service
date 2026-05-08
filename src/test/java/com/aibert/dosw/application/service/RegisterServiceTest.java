@@ -63,6 +63,7 @@ class RegisterServiceTest {
 
         assertNotNull(response.getId());
         assertEquals("ESTUDIANTE", response.getRole());
+        assertNotNull(response.getMessage());
     }
 
     @Test
@@ -83,5 +84,92 @@ class RegisterServiceTest {
         when(request.getConfirmPassword()).thenReturn("Diferente");
 
         assertThrows(IllegalArgumentException.class, () -> registerService.register(request));
+    }
+
+    @Test
+    void verifyEmail_tokenValido_verificaUsuario() {
+        com.aibert.dosw.domain.model.user.EmailVerificationToken token =
+                com.aibert.dosw.domain.model.user.EmailVerificationToken.builder()
+                        .id(UUID.randomUUID())
+                        .token("valid-token")
+                        .userId(UUID.randomUUID())
+                        .expiresAt(java.time.LocalDateTime.now().plusHours(1))
+                        .used(false)
+                        .build();
+        User user = User.builder()
+                .id(token.getUserId())
+                .fullName("Test")
+                .email("test@mail.escuelaing.edu.co")
+                .password("hashed")
+                .verified(false)
+                .role(Role.ESTUDIANTE)
+                .status(com.aibert.dosw.domain.model.user.UserStatus.ACTIVO)
+                .build();
+
+        when(tokenRepository.findByToken("valid-token")).thenReturn(java.util.Optional.of(token));
+        when(userRepository.findById(token.getUserId())).thenReturn(java.util.Optional.of(user));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        assertDoesNotThrow(() -> registerService.verifyEmail("valid-token"));
+    }
+
+    @Test
+    void verifyEmail_tokenNoExiste_lanzaInvalidToken() {
+        when(tokenRepository.findByToken("bad-token")).thenReturn(java.util.Optional.empty());
+        assertThrows(com.aibert.dosw.domain.exceptions.InvalidTokenException.class,
+                () -> registerService.verifyEmail("bad-token"));
+    }
+
+    @Test
+    void verifyEmail_tokenUsado_lanzaInvalidToken() {
+        com.aibert.dosw.domain.model.user.EmailVerificationToken token =
+                com.aibert.dosw.domain.model.user.EmailVerificationToken.builder()
+                        .id(UUID.randomUUID())
+                        .token("used-token")
+                        .userId(UUID.randomUUID())
+                        .expiresAt(java.time.LocalDateTime.now().plusHours(1))
+                        .used(true)
+                        .build();
+        when(tokenRepository.findByToken("used-token")).thenReturn(java.util.Optional.of(token));
+        assertThrows(com.aibert.dosw.domain.exceptions.InvalidTokenException.class,
+                () -> registerService.verifyEmail("used-token"));
+    }
+
+    @Test
+    void verifyEmail_tokenExpirado_lanzaInvalidToken() {
+        com.aibert.dosw.domain.model.user.EmailVerificationToken token =
+                com.aibert.dosw.domain.model.user.EmailVerificationToken.builder()
+                        .id(UUID.randomUUID())
+                        .token("expired-token")
+                        .userId(UUID.randomUUID())
+                        .expiresAt(java.time.LocalDateTime.now().minusHours(1))
+                        .used(false)
+                        .build();
+        when(tokenRepository.findByToken("expired-token")).thenReturn(java.util.Optional.of(token));
+        assertThrows(com.aibert.dosw.domain.exceptions.InvalidTokenException.class,
+                () -> registerService.verifyEmail("expired-token"));
+    }
+
+    @Test
+    void resendVerificationEmail_usuarioExiste_enviaEmail() {
+        User user = User.builder()
+                .id(UUID.randomUUID())
+                .email("test@mail.escuelaing.edu.co")
+                .role(Role.ESTUDIANTE)
+                .status(com.aibert.dosw.domain.model.user.UserStatus.ACTIVO)
+                .build();
+        when(userRepository.findByEmail("test@mail.escuelaing.edu.co")).thenReturn(java.util.Optional.of(user));
+        when(tokenRepository.save(any())).thenReturn(null);
+        doNothing().when(emailService).sendVerificationEmail(any(), any());
+
+        assertDoesNotThrow(() -> registerService.resendVerificationEmail("test@mail.escuelaing.edu.co"));
+    }
+
+    @Test
+    void resendVerificationEmail_usuarioNoExiste_lanzaException() {
+        when(userRepository.findByEmail(any())).thenReturn(java.util.Optional.empty());
+        assertThrows(com.aibert.dosw.domain.exceptions.UserNotFoundException.class,
+                () -> registerService.resendVerificationEmail("noexiste@mail.escuelaing.edu.co"));
     }
 }

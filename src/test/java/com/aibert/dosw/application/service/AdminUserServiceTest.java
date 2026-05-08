@@ -82,4 +82,58 @@ class AdminUserServiceTest {
         List<UserSummaryDTO> result = adminUserService.listUsers(null, null, null);
         assertEquals(1, result.size());
     }
-}
+
+    @Test
+    void listUsers_conFiltroStatus_retornaLista() {
+        when(userRepository.findByFilters(any(), any(), any())).thenReturn(List.of(buildUser(userId)));
+        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, "ACTIVO");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void updateUserStatus_exitoso_actualizaEstado() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        UserSummaryDTO result = adminUserService.updateUserStatus(adminId, userId, "INACTIVO");
+        assertNotNull(result);
+    }
+
+    @Test
+    void updateUserStatus_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> adminUserService.updateUserStatus(adminId, userId, "INACTIVO"));
+    }
+
+    @Test
+    void deleteUser_exitoso_eliminaUsuario() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        doNothing().when(userRepository).deleteById(userId);
+        assertDoesNotThrow(() -> adminUserService.deleteUser(adminId, userId));
+        verify(userRepository).deleteById(userId);
+    }
+
+    @Test
+    void deleteUser_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> adminUserService.deleteUser(adminId, userId));
+    }
+
+    @Test
+    void changeRole_exitoso_actualizaRol() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(dto.getNewRole()).thenReturn(Role.MONITOR);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        UserSummaryDTO result = adminUserService.changeRole(adminId, userId, dto);
+        assertNotNull(result);
+    }
+
+    @Test
+    void changeRole_usuarioNoExiste_lanzaException() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> adminUserService.changeRole(adminId, userId, dto));
+    }
