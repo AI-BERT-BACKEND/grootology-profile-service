@@ -123,7 +123,7 @@ class AdminUserServiceTest {
     @Test
     void changeRole_exitoso_actualizaRol() {
         ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
-        when(dto.getNewRole()).thenReturn(Role.MONITOR);
+        when(dto.getNewRole()).thenReturn(Role.ADMIN);
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         UserSummaryDTO result = adminUserService.changeRole(adminId, userId, dto);
@@ -137,3 +137,4 @@ class AdminUserServiceTest {
         assertThrows(UserNotFoundException.class,
                 () -> adminUserService.changeRole(adminId, userId, dto));
     }
+}
