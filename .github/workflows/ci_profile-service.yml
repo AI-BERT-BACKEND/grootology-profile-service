@@ -209,6 +209,9 @@ jobs:
           resourceGroup: aibert-rg
           containerAppName: aibert-profile-service-qa
           imageToDeploy: ghcr.io/ai-bert-backend/grootology-profile-service:qa-latest
+          registryUrl: ghcr.io
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-prod:
     name: Deploy to PROD
@@ -231,3 +234,6 @@ jobs:
           resourceGroup: aibert-rg
           containerAppName: aibert-profile-service-prod
           imageToDeploy: ghcr.io/ai-bert-backend/grootology-profile-service:prod-latest
+          registryUrl: ghcr.io
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GITHUB_TOKEN }}
