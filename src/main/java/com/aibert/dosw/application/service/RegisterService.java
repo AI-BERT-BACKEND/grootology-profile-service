@@ -190,3 +190,4 @@ public class RegisterService implements RegisterUseCase {
                 .resendAvailability(false)
                 .build();
     }
+}
