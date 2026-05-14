@@ -169,4 +169,107 @@ class RegisterServiceTest {
         assertThrows(UserNotFoundException.class,
                 () -> registerService.resendVerificationEmail("noexiste@mail.escuelaing.edu.co"));
     }
+
+    private EmailVerificationToken buildOtpToken(UUID userId, String otp, boolean used,
+            LocalDateTime expiresAt, Integer failedAttempts, LocalDateTime blockedUntil) {
+        return EmailVerificationToken.builder()
+                .id(1L).token(otp).userId(userId)
+                .expiresAt(expiresAt).used(used)
+                .failedAttempts(failedAttempts).blockedUntil(blockedUntil)
+                .build();
+    }
+
+    @Test
+    void verifyOtp_codigoCorrecto_verificaCuenta() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertTrue(response.isVerificationStatus());
+        assertTrue(response.isAccountStatus());
+        assertEquals(0, response.getExpirationTime());
+        assertFalse(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_codigoIncorrecto_retornaFalso() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        var response = registerService.verifyOtp(userId, "999999");
+
+        assertFalse(response.isVerificationStatus());
+        assertFalse(response.isAccountStatus());
+        assertTrue(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_tokenExpirado_retornaResendTrue() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().minusMinutes(1), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertFalse(response.isVerificationStatus());
+        assertTrue(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_tokenUsado_retornaResendTrue() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", true,
+                LocalDateTime.now().plusMinutes(5), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertFalse(response.isVerificationStatus());
+        assertTrue(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_cuentaBloqueada_retornaBloqueo() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 0, LocalDateTime.now().plusMinutes(10));
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertFalse(response.isVerificationStatus());
+        assertFalse(response.isResendAvailability());
+        assertTrue(response.getExpirationTime() > 0);
+    }
+
+    @Test
+    void verifyOtp_tercerintentoFallido_bloqueaCuenta() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 2, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        var response = registerService.verifyOtp(userId, "999999");
+
+        assertFalse(response.isVerificationStatus());
+        assertFalse(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_tokenNoExiste_lanzaException() {
+        UUID userId = UUID.randomUUID();
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.empty());
+        assertThrows(InvalidTokenException.class, () -> registerService.verifyOtp(userId, "123456"));
+    }
 }
