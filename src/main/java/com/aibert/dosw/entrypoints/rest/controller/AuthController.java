@@ -2,7 +2,9 @@ package com.aibert.dosw.entrypoints.rest.controller;
 
 import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
 import com.aibert.dosw.application.dto.response.OtpVerificationResponseDTO;
+import com.aibert.dosw.application.dto.response.PasswordResetResponseDTO;
 import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
+import com.aibert.dosw.domain.ports.in.PasswordResetUseCase;
 import com.aibert.dosw.domain.ports.in.RegisterUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class AuthController {
 
     private final RegisterUseCase registerUseCase;
+    private final PasswordResetUseCase passwordResetUseCase;
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
@@ -35,5 +38,19 @@ public class AuthController {
     public ResponseEntity<String> resend(@RequestParam String email) {
         registerUseCase.resendVerificationEmail(email);
         return ResponseEntity.ok("Código OTP reenviado al correo institucional.");
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<PasswordResetResponseDTO> forgotPassword(@RequestParam String email) {
+        return ResponseEntity.ok(passwordResetUseCase.requestPasswordReset(email));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @RequestParam String token,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword) {
+        passwordResetUseCase.resetPassword(token, newPassword, confirmPassword);
+        return ResponseEntity.ok("Contraseña restablecida exitosamente.");
     }
 }

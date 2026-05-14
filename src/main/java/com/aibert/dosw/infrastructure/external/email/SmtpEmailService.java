@@ -20,4 +20,13 @@ public class SmtpEmailService implements EmailServicePort {
         message.setText("Tu código de verificación es:\n\n" + verificationLink + "\n\nEste código caduca en 5 minutos y solo puede usarse una vez.");
         mailSender.send(message);
     }
+
+    @Override
+    public void sendRecoveryEmail(String toEmail, String recoveryLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Recuperación de contraseña - EciPlanner");
+        message.setText("Haz clic en el siguiente enlace para restablecer tu contraseña (caduca en 2 minutos):\n\n" + recoveryLink + "\n\nSi no solicitaste esto, ignora este correo.");
+        mailSender.send(message);
+    }
 }
