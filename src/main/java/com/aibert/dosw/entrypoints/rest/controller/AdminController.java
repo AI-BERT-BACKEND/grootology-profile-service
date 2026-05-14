@@ -1,5 +1,6 @@
 package com.aibert.dosw.entrypoints.rest.controller;
 
+import com.aibert.dosw.application.dto.request.AdminEditUserRequestDTO;
 import com.aibert.dosw.application.dto.request.ChangeRoleRequestDTO;
 import com.aibert.dosw.application.dto.response.UserSummaryDTO;
 import com.aibert.dosw.domain.ports.in.AdminUserUseCase;
@@ -23,13 +24,22 @@ public class AdminController {
     public ResponseEntity<List<UserSummaryDTO>> listUsers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(adminUserUseCase.listUsers(name, email, status));
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String role) {
+        return ResponseEntity.ok(adminUserUseCase.listUsers(name, email, status, role));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserSummaryDTO> getUserDetail(@PathVariable UUID userId) {
         return ResponseEntity.ok(adminUserUseCase.getUserDetail(userId));
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserSummaryDTO> editUser(
+            @RequestHeader("X-Admin-Id") UUID adminId,
+            @PathVariable UUID userId,
+            @Valid @RequestBody AdminEditUserRequestDTO request) {
+        return ResponseEntity.ok(adminUserUseCase.editUser(adminId, userId, request));
     }
 
     @PutMapping("/{userId}/status")

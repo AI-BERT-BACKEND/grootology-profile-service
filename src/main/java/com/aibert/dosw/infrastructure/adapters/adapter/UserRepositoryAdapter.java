@@ -41,13 +41,18 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
+    public boolean existsByEmailAndIdNot(String email, UUID id) {
+        return jpaRepository.existsByEmailAndIdNot(email, id);
+    }
+
+    @Override
     public List<User> findAll() {
         return jpaRepository.findAll().stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 
     @Override
-    public List<User> findByFilters(String name, String email, UserStatus status) {
-        return jpaRepository.findByFilters(name, email, status)
+    public List<User> findByFilters(String name, String email, UserStatus status, String role) {
+        return jpaRepository.findByFilters(name, email, status, role)
                 .stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 

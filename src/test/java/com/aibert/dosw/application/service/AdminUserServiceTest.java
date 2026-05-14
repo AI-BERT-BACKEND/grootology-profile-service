@@ -1,5 +1,6 @@
 package com.aibert.dosw.application.service;
 
+import com.aibert.dosw.application.dto.request.AdminEditUserRequestDTO;
 import com.aibert.dosw.application.dto.request.ChangeRoleRequestDTO;
 import com.aibert.dosw.application.dto.response.UserSummaryDTO;
 import com.aibert.dosw.domain.exceptions.UserNotFoundException;
@@ -78,16 +79,69 @@ class AdminUserServiceTest {
 
     @Test
     void listUsers_retornaLista() {
-        when(userRepository.findByFilters(any(), any(), any())).thenReturn(List.of(buildUser(userId)));
-        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, null);
+        when(userRepository.findByFilters(any(), any(), any(), any())).thenReturn(List.of(buildUser(userId)));
+        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, null, null);
         assertEquals(1, result.size());
     }
 
     @Test
     void listUsers_conFiltroStatus_retornaLista() {
-        when(userRepository.findByFilters(any(), any(), any())).thenReturn(List.of(buildUser(userId)));
-        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, "ACTIVO");
+        when(userRepository.findByFilters(any(), any(), any(), any())).thenReturn(List.of(buildUser(userId)));
+        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, "ACTIVO", null);
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void listUsers_conFiltroRol_retornaLista() {
+        when(userRepository.findByFilters(any(), any(), any(), any())).thenReturn(List.of(buildUser(userId)));
+        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, null, "ESTUDIANTE");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void editUser_exitoso_actualizaDatos() {
+        AdminEditUserRequestDTO dto = mock(AdminEditUserRequestDTO.class);
+        when(dto.getFullName()).thenReturn("Nuevo Nombre");
+        when(dto.getEmail()).thenReturn("nuevo@mail.escuelaing.edu.co");
+        when(dto.getRole()).thenReturn(Role.ESTUDIANTE);
+        when(dto.getStatus()).thenReturn(UserStatus.ACTIVO);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.existsByEmailAndIdNot(any(), any())).thenReturn(false);
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        UserSummaryDTO result = adminUserService.editUser(adminId, userId, dto);
+        assertNotNull(result);
+    }
+
+    @Test
+    void editUser_correoYaExiste_lanzaException() {
+        AdminEditUserRequestDTO dto = mock(AdminEditUserRequestDTO.class);
+        when(dto.getEmail()).thenReturn("otro@mail.escuelaing.edu.co");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.existsByEmailAndIdNot(any(), any())).thenReturn(true);
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.editUser(adminId, userId, dto));
+    }
+
+    @Test
+    void changeRole_yaEsAdmin_lanzaException() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(dto.getNewRole()).thenReturn(Role.ADMIN);
+        User adminUser = User.builder().id(userId).fullName("Test")
+                .email("test@mail.escuelaing.edu.co").password("hashed")
+                .verified(true).role(Role.ADMIN).status(UserStatus.ACTIVO)
+                .profileComplete(true).createdAt(LocalDateTime.now()).build();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(adminUser));
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.changeRole(adminId, userId, dto));
+    }
+
+    @Test
+    void changeRole_yaEsEstudiante_lanzaException() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(dto.getNewRole()).thenReturn(Role.ESTUDIANTE);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.changeRole(adminId, userId, dto));
     }
 
     @Test

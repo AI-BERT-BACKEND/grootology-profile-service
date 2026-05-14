@@ -1,8 +1,10 @@
 package com.aibert.dosw.application.service;
 
+import com.aibert.dosw.application.dto.request.AdminEditUserRequestDTO;
 import com.aibert.dosw.application.dto.request.ChangeRoleRequestDTO;
 import com.aibert.dosw.application.dto.response.UserSummaryDTO;
 import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.Role;
 import com.aibert.dosw.domain.model.user.User;
 import com.aibert.dosw.domain.model.user.UserStatus;
 import com.aibert.dosw.domain.ports.in.AdminUserUseCase;
@@ -21,9 +23,9 @@ public class AdminUserService implements AdminUserUseCase {
     private final UserRepositoryPort userRepository;
 
     @Override
-    public List<UserSummaryDTO> listUsers(String name, String email, String status) {
+    public List<UserSummaryDTO> listUsers(String name, String email, String status, String role) {
         UserStatus userStatus = status != null ? UserStatus.valueOf(status) : null;
-        return userRepository.findByFilters(name, email, userStatus)
+        return userRepository.findByFilters(name, email, userStatus, role)
                 .stream().map(this::toSummary).collect(Collectors.toList());
     }
 
@@ -31,6 +33,20 @@ public class AdminUserService implements AdminUserUseCase {
     public UserSummaryDTO getUserDetail(UUID userId) {
         return toSummary(userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
+    }
+
+    @Override
+    public UserSummaryDTO editUser(UUID adminId, UUID userId, AdminEditUserRequestDTO request) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
+            throw new IllegalArgumentException("El correo ya está asociado a otra cuenta");
+        }
+        User updated = copyWith(user, u -> u
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .role(request.getRole())
+                .status(request.getStatus()));
+        return toSummary(userRepository.save(updated));
     }
 
     @Override
@@ -58,6 +74,12 @@ public class AdminUserService implements AdminUserUseCase {
             throw new IllegalArgumentException("No puedes modificar tu propio rol");
         }
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (request.getNewRole() == Role.ADMIN && user.getRole() == Role.ADMIN) {
+            throw new IllegalArgumentException("El usuario ya tiene el rol ADMIN");
+        }
+        if (request.getNewRole() == Role.ESTUDIANTE && user.getRole() == Role.ESTUDIANTE) {
+            throw new IllegalArgumentException("El usuario ya tiene el rol ESTUDIANTE");
+        }
         User updated = copyWith(user, u -> u.role(request.getNewRole()));
         return toSummary(userRepository.save(updated));
     }
