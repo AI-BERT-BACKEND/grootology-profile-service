@@ -62,7 +62,6 @@ class RegisterServiceTest {
         when(request.getConfirmPassword()).thenReturn("Pass1234");
         when(request.getFullName()).thenReturn("Nuevo Usuario");
         when(request.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
-        when(request.getSemester()).thenReturn(3);
 
         when(userRepository.existsByEmail(any())).thenReturn(false);
         when(passwordEncoder.encode(any())).thenReturn("hashed");

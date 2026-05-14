@@ -49,7 +49,6 @@ public class RegisterService implements RegisterUseCase {
                 .role(Role.ESTUDIANTE)
                 .status(com.aibert.dosw.domain.model.user.UserStatus.ACTIVO)
                 .career(request.getCareer())
-                .currentSemester(request.getSemester())
                 .profileComplete(false)
                 .createdAt(LocalDateTime.now())
                 .build());
@@ -111,7 +110,7 @@ public class RegisterService implements RegisterUseCase {
         tokenRepository.save(EmailVerificationToken.builder()
                 .token(token)
                 .userId(user.getId())
-                .expiresAt(LocalDateTime.now().plusHours(24))
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .used(false)
                 .build());
         emailService.sendVerificationEmail(user.getEmail(), baseUrl + "/api/auth/verify?token=" + token);
