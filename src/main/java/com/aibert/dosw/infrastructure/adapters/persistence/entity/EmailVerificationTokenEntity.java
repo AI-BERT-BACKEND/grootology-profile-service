@@ -27,4 +27,10 @@ public class EmailVerificationTokenEntity {
 
     @Column(nullable = false)
     private boolean used;
+
+    @Column
+    private Integer failedAttempts;
+
+    @Column
+    private LocalDateTime blockedUntil;
 }

@@ -17,7 +17,7 @@ public class SmtpEmailService implements EmailServicePort {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
         message.setSubject("Verifica tu cuenta en EciPlanner");
-        message.setText("Haz clic en el siguiente enlace para verificar tu cuenta (caduca en 10 minutos):\n\n" + verificationLink);
+        message.setText("Tu código de verificación es:\n\n" + verificationLink + "\n\nEste código caduca en 5 minutos y solo puede usarse una vez.");
         mailSender.send(message);
     }
 }

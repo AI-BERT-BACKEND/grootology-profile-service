@@ -1,6 +1,7 @@
 package com.aibert.dosw.application.service;
 
 import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
+import com.aibert.dosw.application.dto.response.OtpVerificationResponseDTO;
 import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
 import com.aibert.dosw.domain.exceptions.EmailAlreadyRegisteredException;
 import com.aibert.dosw.domain.exceptions.InvalidTokenException;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
@@ -105,14 +108,85 @@ public class RegisterService implements RegisterUseCase {
         sendVerificationToken(user);
     }
 
+    private static final int MAX_OTP_ATTEMPTS = 3;
+    private static final int OTP_LOCK_MINUTES = 15;
+    private static final int OTP_EXPIRY_MINUTES = 5;
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private void sendVerificationToken(User user) {
-        String token = UUID.randomUUID().toString();
+        String otp = String.format("%06d", RANDOM.nextInt(1_000_000));
         tokenRepository.save(EmailVerificationToken.builder()
-                .token(token)
+                .token(otp)
                 .userId(user.getId())
-                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .expiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES))
                 .used(false)
+                .failedAttempts(0)
                 .build());
-        emailService.sendVerificationEmail(user.getEmail(), baseUrl + "/api/auth/verify?token=" + token);
+        emailService.sendVerificationEmail(user.getEmail(), otp);
     }
-}
+
+    @Override
+    public OtpVerificationResponseDTO verifyOtp(UUID userId, String otp) {
+        EmailVerificationToken token = tokenRepository.findLatestByUserId(userId)
+                .orElseThrow(InvalidTokenException::new);
+
+        if (token.getBlockedUntil() != null && LocalDateTime.now().isBefore(token.getBlockedUntil())) {
+            long secondsLeft = ChronoUnit.SECONDS.between(LocalDateTime.now(), token.getBlockedUntil());
+            return OtpVerificationResponseDTO.builder()
+                    .verificationStatus(false)
+                    .accountStatus(false)
+                    .expirationTime(secondsLeft)
+                    .resendAvailability(false)
+                    .build();
+        }
+
+        if (token.isUsed() || token.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return OtpVerificationResponseDTO.builder()
+                    .verificationStatus(false)
+                    .accountStatus(false)
+                    .expirationTime(0)
+                    .resendAvailability(true)
+                    .build();
+        }
+
+        if (!token.getToken().equals(otp)) {
+            int attempts = (token.getFailedAttempts() == null ? 0 : token.getFailedAttempts()) + 1;
+            LocalDateTime blockedUntil = attempts >= MAX_OTP_ATTEMPTS
+                    ? LocalDateTime.now().plusMinutes(OTP_LOCK_MINUTES) : null;
+            tokenRepository.save(EmailVerificationToken.builder()
+                    .id(token.getId())
+                    .token(token.getToken())
+                    .userId(token.getUserId())
+                    .expiresAt(token.getExpiresAt())
+                    .used(false)
+                    .failedAttempts(attempts >= MAX_OTP_ATTEMPTS ? 0 : attempts)
+                    .blockedUntil(blockedUntil)
+                    .build());
+            return OtpVerificationResponseDTO.builder()
+                    .verificationStatus(false)
+                    .accountStatus(false)
+                    .expirationTime(ChronoUnit.SECONDS.between(LocalDateTime.now(), token.getExpiresAt()))
+                    .resendAvailability(blockedUntil == null)
+                    .build();
+        }
+
+        User user = userRepository.findById(token.getUserId()).orElseThrow(UserNotFoundException::new);
+        userRepository.save(User.builder()
+                .id(user.getId()).fullName(user.getFullName()).email(user.getEmail())
+                .password(user.getPassword()).verified(true).role(user.getRole())
+                .status(user.getStatus()).career(user.getCareer())
+                .currentSemester(user.getCurrentSemester()).weeklyHours(user.getWeeklyHours())
+                .profileComplete(user.isProfileComplete()).profilePhotoUrl(user.getProfilePhotoUrl())
+                .createdAt(user.getCreatedAt()).build());
+
+        tokenRepository.save(EmailVerificationToken.builder()
+                .id(token.getId()).token(token.getToken()).userId(token.getUserId())
+                .expiresAt(token.getExpiresAt()).used(true).failedAttempts(0).build());
+
+        return OtpVerificationResponseDTO.builder()
+                .verificationStatus(true)
+                .accountStatus(true)
+                .expirationTime(0)
+                .resendAvailability(false)
+                .build();
+    }

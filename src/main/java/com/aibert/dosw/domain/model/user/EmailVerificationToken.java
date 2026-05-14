@@ -14,4 +14,6 @@ public class EmailVerificationToken {
     private UUID userId;
     private LocalDateTime expiresAt;
     private boolean used;
+    private Integer failedAttempts;
+    private LocalDateTime blockedUntil;
 }
