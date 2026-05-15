@@ -40,8 +40,12 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Career career;
 
+    @Enumerated(EnumType.STRING)
+    private Career doubleDegreeCareer;
+
     private Integer currentSemester;
     private Integer weeklyHours;
+    private Integer dailyStudyHours;
     private Double currentGpa;
     private Integer currentSubjects;
 
@@ -49,6 +53,10 @@ public class UserEntity {
     private AcademicGoal academicGoal;
 
     private boolean currentlyWorking;
+
+    @Enumerated(EnumType.STRING)
+    private Availability availability;
+
     private boolean profileComplete;
     private String profilePhotoUrl;
     private Integer passwordVersion;

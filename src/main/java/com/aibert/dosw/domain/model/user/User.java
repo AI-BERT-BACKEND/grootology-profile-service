@@ -17,12 +17,15 @@ public class User {
     private Role role;
     private UserStatus status;
     private Career career;
+    private Career doubleDegreeCareer;
     private Integer currentSemester;
     private Integer weeklyHours;
+    private Integer dailyStudyHours;
     private Double currentGpa;
     private Integer currentSubjects;
     private AcademicGoal academicGoal;
     private boolean currentlyWorking;
+    private Availability availability;
     private boolean profileComplete;
     private String profilePhotoUrl;
     private Integer passwordVersion;

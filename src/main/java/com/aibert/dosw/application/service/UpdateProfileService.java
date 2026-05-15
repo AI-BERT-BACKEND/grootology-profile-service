@@ -22,6 +22,8 @@ public class UpdateProfileService implements UpdateProfileUseCase {
     private final BCryptPasswordEncoder passwordEncoder;
     private final FileUploadService fileUploadService;
 
+    private static final long MAX_PHOTO_SIZE = 2 * 1024 * 1024L;
+
     @Override
     public void updateProfile(UUID userId, UpdateProfileDTO dto, MultipartFile photo) {
         User user = userRepository.findById(userId)
@@ -29,28 +31,41 @@ public class UpdateProfileService implements UpdateProfileUseCase {
 
         String photoUrl = user.getProfilePhotoUrl();
         if (photo != null && !photo.isEmpty()) {
+            if (photo.getSize() > MAX_PHOTO_SIZE) {
+                throw new IllegalArgumentException("El archivo no debe superar los 2 MB");
+            }
             String contentType = photo.getContentType();
             if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
-                throw new IllegalArgumentException("Solo se aceptan archivos JPG o PNG");
+                throw new IllegalArgumentException("Solo se aceptan archivos JPG, PNG o JPEG");
             }
             photoUrl = fileUploadService.upload(photo);
         }
 
+        String fullName = user.getFullName();
+        if (dto.getFirstName() != null || dto.getLastName() != null) {
+            String first = dto.getFirstName() != null ? dto.getFirstName() : user.getFullName().split(" ")[0];
+            String last = dto.getLastName() != null ? dto.getLastName() : (user.getFullName().contains(" ") ? user.getFullName().substring(user.getFullName().indexOf(" ") + 1) : "");
+            fullName = (first + " " + last).trim();
+        }
+
         userRepository.save(User.builder()
                 .id(user.getId())
-                .fullName(dto.getFullName() != null ? dto.getFullName() : user.getFullName())
+                .fullName(fullName)
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .verified(user.isVerified())
                 .role(user.getRole())
                 .status(user.getStatus())
                 .career(user.getCareer())
+                .doubleDegreeCareer(user.getDoubleDegreeCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())
+                .dailyStudyHours(user.getDailyStudyHours())
                 .currentGpa(user.getCurrentGpa())
                 .currentSubjects(user.getCurrentSubjects())
                 .academicGoal(user.getAcademicGoal())
                 .currentlyWorking(user.isCurrentlyWorking())
+                .availability(user.getAvailability())
                 .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(photoUrl)
                 .passwordVersion(user.getPasswordVersion())
@@ -71,6 +86,10 @@ public class UpdateProfileService implements UpdateProfileUseCase {
             throw new InvalidPasswordException();
         }
 
+        if (passwordEncoder.matches(dto.getNewPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("La nueva contraseña no puede ser igual a la actual");
+        }
+
         userRepository.save(User.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
@@ -80,12 +99,15 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .role(user.getRole())
                 .status(user.getStatus())
                 .career(user.getCareer())
+                .doubleDegreeCareer(user.getDoubleDegreeCareer())
                 .currentSemester(user.getCurrentSemester())
                 .weeklyHours(user.getWeeklyHours())
+                .dailyStudyHours(user.getDailyStudyHours())
                 .currentGpa(user.getCurrentGpa())
                 .currentSubjects(user.getCurrentSubjects())
                 .academicGoal(user.getAcademicGoal())
                 .currentlyWorking(user.isCurrentlyWorking())
+                .availability(user.getAvailability())
                 .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
                 .passwordVersion(user.getPasswordVersion() == null ? 1 : user.getPasswordVersion() + 1)

@@ -5,6 +5,7 @@ import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
 import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
 import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
 import com.aibert.dosw.domain.ports.in.AcademicProfileUseCase;
+import com.aibert.dosw.domain.ports.in.DeleteAccountUseCase;
 import com.aibert.dosw.domain.ports.in.UpdateProfileUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ProfileController {
 
     private final AcademicProfileUseCase academicProfileUseCase;
     private final UpdateProfileUseCase updateProfileUseCase;
+    private final DeleteAccountUseCase deleteAccountUseCase;
 
     @PutMapping("/{userId}/academic")
     public ResponseEntity<AcademicProfileResponseDTO> saveAcademicProfile(
@@ -45,5 +47,13 @@ public class ProfileController {
             @Valid @RequestBody PasswordChangeDTO dto) {
         updateProfileUseCase.changePassword(userId, dto);
         return ResponseEntity.ok(Map.of("message", "Contraseña actualizada. Todas las sesiones han sido cerradas."));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Map<String, Object>> deleteAccount(
+            @PathVariable UUID userId,
+            @RequestParam String currentPassword) {
+        deleteAccountUseCase.deleteAccount(userId, currentPassword);
+        return ResponseEntity.ok(Map.of("accountDeleted", true, "sessionInvalidated", true, "redirectLogin", true));
     }
 }

@@ -13,7 +13,7 @@ public class PasswordChangeDTO {
 
     @NotBlank
     @Size(min = 8)
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d).+$", message = "Mínimo 8 caracteres, letras y números")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$", message = "Mínimo 8 caracteres, una mayúscula, una minúscula y un número")
     private String newPassword;
 
     @NotBlank

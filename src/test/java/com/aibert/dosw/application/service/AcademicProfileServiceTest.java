@@ -29,45 +29,69 @@ class AcademicProfileServiceTest {
 
     private User buildUser() {
         return User.builder()
-                .id(userId)
-                .fullName("Test User")
-                .email("test@mail.escuelaing.edu.co")
-                .password("hashed")
-                .verified(true)
-                .role(Role.ESTUDIANTE)
-                .status(UserStatus.ACTIVO)
-                .career(Career.INGENIERIA_SISTEMAS)
-                .currentSemester(3)
-                .profileComplete(false)
-                .createdAt(LocalDateTime.now())
-                .build();
+                .id(userId).fullName("Test User")
+                .email("test@mail.escuelaing.edu.co").password("hashed")
+                .verified(true).role(Role.ESTUDIANTE).status(UserStatus.ACTIVO)
+                .career(Career.INGENIERIA_SISTEMAS).currentSemester(3)
+                .profileComplete(false).createdAt(LocalDateTime.now()).build();
     }
 
-    @Test
-    void saveAcademicProfile_exitoso_retornaDatos() {
+    private AcademicProfileDTO buildDto() {
         AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
         when(dto.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
+        when(dto.getDoubleDegreeCareer()).thenReturn(null);
         when(dto.getCurrentSemester()).thenReturn(3);
         when(dto.getWeeklyHours()).thenReturn(20);
+        when(dto.getDailyStudyHours()).thenReturn(4);
         when(dto.getCurrentGpa()).thenReturn(3.8);
         when(dto.getCurrentSubjects()).thenReturn(5);
         when(dto.getAcademicGoal()).thenReturn(AcademicGoal.MEJORAR_PROMEDIO);
         when(dto.getCurrentlyWorking()).thenReturn(false);
+        when(dto.getAvailability()).thenReturn(Availability.TARDE);
+        return dto;
+    }
 
+    @Test
+    void saveAcademicProfile_exitoso_retornaDatos() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, dto);
+        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, buildDto());
 
         assertNotNull(response);
         assertEquals(20, response.getWeeklyHours());
         assertEquals(3.8, response.getCurrentGpa());
+        assertEquals(4, response.getDailyStudyHours());
+        assertEquals(Availability.TARDE, response.getAvailability());
+        assertTrue(response.isProfileComplete());
+    }
+
+    @Test
+    void saveAcademicProfile_conDobleCarrera_retornaDatos() {
+        AcademicProfileDTO dto = buildDto();
+        when(dto.getDoubleDegreeCareer()).thenReturn(Career.MATEMATICAS);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, dto);
+        assertEquals("MATEMATICAS", response.getDoubleDegreeCareer());
+    }
+
+    @Test
+    void saveAcademicProfile_conObjetivoEquilibrio_retornaDatos() {
+        AcademicProfileDTO dto = buildDto();
+        when(dto.getAcademicGoal()).thenReturn(AcademicGoal.EQUILIBRIO);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, dto);
+        assertEquals(AcademicGoal.EQUILIBRIO, response.getAcademicGoal());
     }
 
     @Test
     void saveAcademicProfile_usuarioNoExiste_lanzaException() {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
-        assertThrows(UserNotFoundException.class, () -> academicProfileService.saveAcademicProfile(userId, dto));
+        assertThrows(UserNotFoundException.class,
+                () -> academicProfileService.saveAcademicProfile(userId, mock(AcademicProfileDTO.class)));
     }
 }

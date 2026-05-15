@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -48,11 +49,55 @@ class UpdateProfileServiceTest {
     @Test
     void updateProfile_exitoso_actualizaNombre() {
         UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
-        when(dto.getFullName()).thenReturn("Nuevo Nombre");
+        when(dto.getFirstName()).thenReturn("Nuevo");
+        when(dto.getLastName()).thenReturn("Nombre");
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
-
         assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, null));
+    }
+
+    @Test
+    void updateProfile_sinCambios_mantieneDatosActuales() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        when(dto.getFirstName()).thenReturn(null);
+        when(dto.getLastName()).thenReturn(null);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, null));
+    }
+
+    @Test
+    void updateProfile_fotoValida_actualizaFoto() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        when(dto.getFirstName()).thenReturn(null);
+        when(dto.getLastName()).thenReturn(null);
+        MockMultipartFile photo = new MockMultipartFile("photo", "foto.jpg", "image/jpeg", new byte[1024]);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(fileUploadService.upload(any())).thenReturn("http://url/foto.jpg");
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, photo));
+    }
+
+    @Test
+    void updateProfile_fotoFormatoInvalido_lanzaException() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        MockMultipartFile photo = new MockMultipartFile("photo", "foto.gif", "image/gif", new byte[1024]);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.updateProfile(userId, dto, photo));
+    }
+
+    @Test
+    void updateProfile_fotoMayorA2MB_lanzaException() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        MockMultipartFile photo = new MockMultipartFile("photo", "foto.jpg", "image/jpeg", new byte[3 * 1024 * 1024]);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.updateProfile(userId, dto, photo));
+    }
+
+    @Test
+    void updateProfile_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> updateProfileService.updateProfile(userId, mock(UpdateProfileDTO.class), null));
     }
 
     @Test
@@ -61,13 +106,23 @@ class UpdateProfileServiceTest {
         when(dto.getCurrentPassword()).thenReturn("oldPass");
         when(dto.getNewPassword()).thenReturn("NewPass123");
         when(dto.getConfirmNewPassword()).thenReturn("NewPass123");
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
         when(passwordEncoder.matches("oldPass", "hashedPassword")).thenReturn(true);
+        when(passwordEncoder.matches("NewPass123", "hashedPassword")).thenReturn(false);
         when(passwordEncoder.encode("NewPass123")).thenReturn("newHashed");
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
-
         assertDoesNotThrow(() -> updateProfileService.changePassword(userId, dto));
+    }
+
+    @Test
+    void changePassword_nuevaIgualActual_lanzaException() {
+        PasswordChangeDTO dto = mock(PasswordChangeDTO.class);
+        when(dto.getCurrentPassword()).thenReturn("SamePass1");
+        when(dto.getNewPassword()).thenReturn("SamePass1");
+        when(dto.getConfirmNewPassword()).thenReturn("SamePass1");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(passwordEncoder.matches("SamePass1", "hashedPassword")).thenReturn(true);
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.changePassword(userId, dto));
     }
 
     @Test
@@ -76,10 +131,8 @@ class UpdateProfileServiceTest {
         when(dto.getCurrentPassword()).thenReturn("wrongPass");
         when(dto.getNewPassword()).thenReturn("NewPass123");
         when(dto.getConfirmNewPassword()).thenReturn("NewPass123");
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
         when(passwordEncoder.matches("wrongPass", "hashedPassword")).thenReturn(false);
-
         assertThrows(InvalidPasswordException.class, () -> updateProfileService.changePassword(userId, dto));
     }
 
@@ -88,14 +141,6 @@ class UpdateProfileServiceTest {
         PasswordChangeDTO dto = mock(PasswordChangeDTO.class);
         when(dto.getNewPassword()).thenReturn("NewPass123");
         when(dto.getConfirmNewPassword()).thenReturn("Diferente");
-
         assertThrows(IllegalArgumentException.class, () -> updateProfileService.changePassword(userId, dto));
-    }
-
-    @Test
-    void updateProfile_usuarioNoExiste_lanzaException() {
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
-        assertThrows(UserNotFoundException.class, () -> updateProfileService.updateProfile(userId, dto, null));
     }
 }
