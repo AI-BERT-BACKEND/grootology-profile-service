@@ -255,7 +255,7 @@ En él se observa cómo los controladores delegan las operaciones de registro y 
 
 <div align="center">
 
-![Diagrama de Clases](docs/uml/Diagrama_de_clases.png)
+![Diagrama_de_Clases.png](docs/uml/Diagrama_de_Clases.png)
 
 </div>
 
@@ -273,7 +273,7 @@ El flujo evidencia la separación de responsabilidades entre:
 
 <div align="center">
 
-![Diagrama de Componentes](docs/uml/Diagrama_de_Componentes.png)
+![Diagrama_de_componentes.png](docs/uml/Diagrama_de_componentes.png)
 
 </div>
 
