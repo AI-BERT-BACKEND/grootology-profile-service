@@ -8,4 +8,5 @@ public interface TokenRepositoryPort {
     EmailVerificationToken save(EmailVerificationToken token);
     Optional<EmailVerificationToken> findByToken(String token);
     Optional<EmailVerificationToken> findLatestByUserId(UUID userId);
+    void invalidateAllByUserId(UUID userId);
 }

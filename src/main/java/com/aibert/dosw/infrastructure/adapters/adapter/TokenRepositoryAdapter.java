@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Component
 @RequiredArgsConstructor
 public class TokenRepositoryAdapter implements TokenRepositoryPort {
@@ -30,5 +32,11 @@ public class TokenRepositoryAdapter implements TokenRepositoryPort {
     @Override
     public Optional<EmailVerificationToken> findLatestByUserId(UUID userId) {
         return jpaRepository.findLatestByUserId(userId).map(mapper::toDomain);
+    }
+
+    @Override
+    @Transactional
+    public void invalidateAllByUserId(UUID userId) {
+        jpaRepository.invalidateAllByUserId(userId);
     }
 }

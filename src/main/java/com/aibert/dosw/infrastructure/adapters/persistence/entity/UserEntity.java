@@ -48,7 +48,7 @@ public class UserEntity {
     private Integer weeklyHours;
     private Integer dailyStudyHours;
     private Double currentGpa;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_subjects", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "subject")
     private List<String> currentSubjects;

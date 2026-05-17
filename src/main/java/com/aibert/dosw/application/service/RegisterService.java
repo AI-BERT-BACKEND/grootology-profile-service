@@ -114,6 +114,7 @@ public class RegisterService implements RegisterUseCase {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private void sendVerificationToken(User user) {
+        tokenRepository.invalidateAllByUserId(user.getId());
         String otp = String.format("%06d", RANDOM.nextInt(1_000_000));
         tokenRepository.save(EmailVerificationToken.builder()
                 .token(otp)
