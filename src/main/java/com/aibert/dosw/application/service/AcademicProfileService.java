@@ -22,6 +22,10 @@ public class AcademicProfileService implements AcademicProfileUseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
+        if (dto.getDoubleDegreeCareer() != null && dto.getDoubleDegreeCareer().equals(dto.getCareer())) {
+            throw new IllegalArgumentException("La doble carrera no puede ser igual a la carrera principal");
+        }
+
         userRepository.save(User.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())

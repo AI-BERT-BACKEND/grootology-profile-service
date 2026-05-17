@@ -6,6 +6,8 @@ import com.aibert.dosw.domain.model.user.Career;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class AcademicProfileDTO {
 
@@ -23,8 +25,8 @@ public class AcademicProfileDTO {
     private Double currentGpa;
 
     @NotNull
-    @Min(1) @Max(10)
-    private Integer currentSubjects;
+    @Size(min = 1, message = "Debes registrar al menos una materia")
+    private List<String> currentSubjects;
 
     @NotNull
     private AcademicGoal academicGoal;

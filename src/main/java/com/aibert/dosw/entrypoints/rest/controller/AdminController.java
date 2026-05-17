@@ -7,6 +7,7 @@ import com.aibert.dosw.domain.ports.in.AdminUserUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,33 +37,37 @@ public class AdminController {
 
     @PutMapping("/{userId}")
     public ResponseEntity<UserSummaryDTO> editUser(
-            @RequestHeader("X-Admin-Id") UUID adminId,
+            Authentication auth,
             @PathVariable UUID userId,
             @Valid @RequestBody AdminEditUserRequestDTO request) {
+        UUID adminId = UUID.fromString((String) auth.getCredentials());
         return ResponseEntity.ok(adminUserUseCase.editUser(adminId, userId, request));
     }
 
     @PutMapping("/{userId}/status")
     public ResponseEntity<UserSummaryDTO> updateStatus(
-            @RequestHeader("X-Admin-Id") UUID adminId,
+            Authentication auth,
             @PathVariable UUID userId,
             @RequestParam String status) {
+        UUID adminId = UUID.fromString((String) auth.getCredentials());
         return ResponseEntity.ok(adminUserUseCase.updateUserStatus(adminId, userId, status));
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Map<String, String>> deleteUser(
-            @RequestHeader("X-Admin-Id") UUID adminId,
+            Authentication auth,
             @PathVariable UUID userId) {
+        UUID adminId = UUID.fromString((String) auth.getCredentials());
         adminUserUseCase.deleteUser(adminId, userId);
         return ResponseEntity.ok(Map.of("message", "Usuario eliminado exitosamente"));
     }
 
     @PutMapping("/{userId}/role")
     public ResponseEntity<UserSummaryDTO> changeRole(
-            @RequestHeader("X-Admin-Id") UUID adminId,
+            Authentication auth,
             @PathVariable UUID userId,
             @Valid @RequestBody ChangeRoleRequestDTO request) {
+        UUID adminId = UUID.fromString((String) auth.getCredentials());
         return ResponseEntity.ok(adminUserUseCase.changeRole(adminId, userId, request));
     }
 }

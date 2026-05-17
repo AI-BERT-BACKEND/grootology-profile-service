@@ -38,14 +38,15 @@ public class AdminUserService implements AdminUserUseCase {
     @Override
     public UserSummaryDTO editUser(UUID adminId, UUID userId, AdminEditUserRequestDTO request) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (user.getStatus() == UserStatus.INACTIVO) {
+            throw new IllegalArgumentException("No se puede editar un usuario inactivo. Actívalo primero");
+        }
         if (userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
             throw new IllegalArgumentException("El correo ya está asociado a otra cuenta");
         }
         User updated = copyWith(user, u -> u
                 .fullName(request.getFullName())
-                .email(request.getEmail())
-                .role(request.getRole())
-                .status(request.getStatus()));
+                .email(request.getEmail()));
         return toSummary(userRepository.save(updated));
     }
 
@@ -55,7 +56,14 @@ public class AdminUserService implements AdminUserUseCase {
             throw new IllegalArgumentException("No puedes realizar esta acción sobre tu propia cuenta");
         }
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        User updated = copyWith(user, u -> u.status(UserStatus.valueOf(newStatus)));
+        UserStatus status = UserStatus.valueOf(newStatus);
+        // Al desactivar, incrementar passwordVersion para invalidar JWTs activos (AIB-8.4 RN-02)
+        Integer newPasswordVersion = user.getPasswordVersion();
+        if (status == UserStatus.INACTIVO) {
+            newPasswordVersion = (newPasswordVersion == null ? 0 : newPasswordVersion) + 1;
+        }
+        final Integer finalPasswordVersion = newPasswordVersion;
+        User updated = copyWith(user, u -> u.status(status).passwordVersion(finalPasswordVersion));
         return toSummary(userRepository.save(updated));
     }
 
@@ -102,6 +110,7 @@ public class AdminUserService implements AdminUserUseCase {
                 .currentlyWorking(user.isCurrentlyWorking())
                 .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
+                .userName(user.getUserName())
                 .passwordVersion(user.getPasswordVersion())
                 .createdAt(user.getCreatedAt());
         return modifier.apply(builder).build();

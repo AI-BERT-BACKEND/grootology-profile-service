@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -103,13 +104,23 @@ class AdminUserServiceTest {
         AdminEditUserRequestDTO dto = mock(AdminEditUserRequestDTO.class);
         when(dto.getFullName()).thenReturn("Nuevo Nombre");
         when(dto.getEmail()).thenReturn("nuevo@mail.escuelaing.edu.co");
-        when(dto.getRole()).thenReturn(Role.ESTUDIANTE);
-        when(dto.getStatus()).thenReturn(UserStatus.ACTIVO);
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
         when(userRepository.existsByEmailAndIdNot(any(), any())).thenReturn(false);
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         UserSummaryDTO result = adminUserService.editUser(adminId, userId, dto);
         assertNotNull(result);
+    }
+
+    @Test
+    void editUser_usuarioInactivo_lanzaException() {
+        AdminEditUserRequestDTO dto = mock(AdminEditUserRequestDTO.class);
+        User inactiveUser = User.builder().id(userId).fullName("Test")
+                .email("test@mail.escuelaing.edu.co").password("hashed")
+                .verified(true).role(Role.ESTUDIANTE).status(UserStatus.INACTIVO)
+                .profileComplete(true).createdAt(LocalDateTime.now()).build();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(inactiveUser));
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.editUser(adminId, userId, dto));
     }
 
     @Test
@@ -150,6 +161,14 @@ class AdminUserServiceTest {
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         UserSummaryDTO result = adminUserService.updateUserStatus(adminId, userId, "INACTIVO");
         assertNotNull(result);
+    }
+
+    @Test
+    void updateUserStatus_desactivar_incrementaPasswordVersion() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        adminUserService.updateUserStatus(adminId, userId, "INACTIVO");
+        verify(userRepository).save(argThat(u -> u.getPasswordVersion() != null && u.getPasswordVersion() >= 1));
     }
 
     @Test

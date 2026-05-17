@@ -41,16 +41,17 @@ public class UpdateProfileService implements UpdateProfileUseCase {
             photoUrl = fileUploadService.upload(photo);
         }
 
-        String fullName = user.getFullName();
-        if (dto.getFirstName() != null || dto.getLastName() != null) {
-            String first = dto.getFirstName() != null ? dto.getFirstName() : user.getFullName().split(" ")[0];
-            String last = dto.getLastName() != null ? dto.getLastName() : (user.getFullName().contains(" ") ? user.getFullName().substring(user.getFullName().indexOf(" ") + 1) : "");
-            fullName = (first + " " + last).trim();
+        String userName = user.getUserName();
+        if (dto.getUserName() != null) {
+            if (userRepository.existsByUserNameAndIdNot(dto.getUserName(), userId)) {
+                throw new IllegalArgumentException("Este nombre de usuario ya está en uso. Por favor elige otro");
+            }
+            userName = dto.getUserName();
         }
 
         userRepository.save(User.builder()
                 .id(user.getId())
-                .fullName(fullName)
+                .fullName(user.getFullName())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .verified(user.isVerified())
@@ -68,6 +69,7 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .availability(user.getAvailability())
                 .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(photoUrl)
+                .userName(userName)
                 .passwordVersion(user.getPasswordVersion())
                 .createdAt(user.getCreatedAt())
                 .build());
@@ -110,6 +112,7 @@ public class UpdateProfileService implements UpdateProfileUseCase {
                 .availability(user.getAvailability())
                 .profileComplete(user.isProfileComplete())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
+                .userName(user.getUserName())
                 .passwordVersion(user.getPasswordVersion() == null ? 1 : user.getPasswordVersion() + 1)
                 .createdAt(user.getCreatedAt())
                 .build());

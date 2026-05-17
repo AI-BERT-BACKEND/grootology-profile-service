@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,11 +45,21 @@ class AcademicProfileServiceTest {
         when(dto.getWeeklyHours()).thenReturn(20);
         when(dto.getDailyStudyHours()).thenReturn(4);
         when(dto.getCurrentGpa()).thenReturn(3.8);
-        when(dto.getCurrentSubjects()).thenReturn(5);
+        when(dto.getCurrentSubjects()).thenReturn(List.of("Cálculo", "Álgebra", "Física"));
         when(dto.getAcademicGoal()).thenReturn(AcademicGoal.MEJORAR_PROMEDIO);
         when(dto.getCurrentlyWorking()).thenReturn(false);
         when(dto.getAvailability()).thenReturn(Availability.TARDE);
         return dto;
+    }
+
+    @Test
+    void saveAcademicProfile_dobleCarreraIgualPrincipal_lanzaException() {
+        AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
+        when(dto.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
+        when(dto.getDoubleDegreeCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        assertThrows(IllegalArgumentException.class,
+                () -> academicProfileService.saveAcademicProfile(userId, dto));
     }
 
     @Test
@@ -63,6 +74,7 @@ class AcademicProfileServiceTest {
         assertEquals(3.8, response.getCurrentGpa());
         assertEquals(4, response.getDailyStudyHours());
         assertEquals(Availability.TARDE, response.getAvailability());
+        assertFalse(response.getCurrentSubjects().isEmpty());
         assertTrue(response.isProfileComplete());
     }
 

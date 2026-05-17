@@ -5,6 +5,8 @@ import com.aibert.dosw.domain.model.user.Availability;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder
 public class AcademicProfileResponseDTO {
@@ -14,7 +16,7 @@ public class AcademicProfileResponseDTO {
     private Integer weeklyHours;
     private Integer dailyStudyHours;
     private Double currentGpa;
-    private Integer currentSubjects;
+    private List<String> currentSubjects;
     private AcademicGoal academicGoal;
     private Boolean currentlyWorking;
     private Availability availability;

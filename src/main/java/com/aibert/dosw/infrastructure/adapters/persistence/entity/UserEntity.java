@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -47,7 +48,10 @@ public class UserEntity {
     private Integer weeklyHours;
     private Integer dailyStudyHours;
     private Double currentGpa;
-    private Integer currentSubjects;
+    @ElementCollection
+    @CollectionTable(name = "user_subjects", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "subject")
+    private List<String> currentSubjects;
 
     @Enumerated(EnumType.STRING)
     private AcademicGoal academicGoal;
@@ -59,6 +63,10 @@ public class UserEntity {
 
     private boolean profileComplete;
     private String profilePhotoUrl;
+
+    @Column(unique = true)
+    private String userName;
+
     private Integer passwordVersion;
 
     @Column(nullable = false)

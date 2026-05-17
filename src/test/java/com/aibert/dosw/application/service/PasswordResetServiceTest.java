@@ -65,7 +65,7 @@ class PasswordResetServiceTest {
                 .requestPasswordReset("test@mail.escuelaing.edu.co");
 
         assertTrue(response.isRecoveryStatus());
-        assertEquals(2, response.getExpirationTime());
+        assertEquals(5, response.getExpirationTime());
         verify(emailService).sendRecoveryEmail(any(), any());
     }
 

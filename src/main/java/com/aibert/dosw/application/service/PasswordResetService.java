@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PasswordResetService implements PasswordResetUseCase {
 
-    private static final int EXPIRY_MINUTES = 2;
+    private static final int EXPIRY_MINUTES = 5;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final UserRepositoryPort userRepository;

@@ -13,6 +13,7 @@ public interface UserRepositoryPort {
     User save(User user);
     boolean existsByEmail(String email);
     boolean existsByEmailAndIdNot(String email, UUID id);
+    boolean existsByUserNameAndIdNot(String userName, UUID id);
     List<User> findAll();
     List<User> findByFilters(String name, String email, UserStatus status, String role);
     void deleteById(UUID id);

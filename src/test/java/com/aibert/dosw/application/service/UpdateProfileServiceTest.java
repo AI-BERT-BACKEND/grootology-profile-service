@@ -47,20 +47,28 @@ class UpdateProfileServiceTest {
     }
 
     @Test
-    void updateProfile_exitoso_actualizaNombre() {
+    void updateProfile_conUserName_actualizaUserName() {
         UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
-        when(dto.getFirstName()).thenReturn("Nuevo");
-        when(dto.getLastName()).thenReturn("Nombre");
+        when(dto.getUserName()).thenReturn("nuevo_user");
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.existsByUserNameAndIdNot("nuevo_user", userId)).thenReturn(false);
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, null));
     }
 
     @Test
+    void updateProfile_userNameDuplicado_lanzaException() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        when(dto.getUserName()).thenReturn("existente");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.existsByUserNameAndIdNot("existente", userId)).thenReturn(true);
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.updateProfile(userId, dto, null));
+    }
+
+    @Test
     void updateProfile_sinCambios_mantieneDatosActuales() {
         UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
-        when(dto.getFirstName()).thenReturn(null);
-        when(dto.getLastName()).thenReturn(null);
+        when(dto.getUserName()).thenReturn(null);
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, null));
@@ -69,8 +77,7 @@ class UpdateProfileServiceTest {
     @Test
     void updateProfile_fotoValida_actualizaFoto() {
         UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
-        when(dto.getFirstName()).thenReturn(null);
-        when(dto.getLastName()).thenReturn(null);
+        when(dto.getUserName()).thenReturn(null);
         MockMultipartFile photo = new MockMultipartFile("photo", "foto.jpg", "image/jpeg", new byte[1024]);
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
         when(fileUploadService.upload(any())).thenReturn("http://url/foto.jpg");

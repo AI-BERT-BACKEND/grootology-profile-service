@@ -7,11 +7,7 @@ import lombok.Getter;
 @Getter
 public class UpdateProfileDTO {
 
-    @Size(min = 2, max = 50)
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Solo letras y espacios")
-    private String firstName;
-
-    @Size(min = 2, max = 50)
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Solo letras y espacios")
-    private String lastName;
+    @Size(min = 3, max = 30, message = "El nombre de usuario debe tener entre 3 y 30 caracteres")
+    @Pattern(regexp = "^[a-zA-Z0-9._]+$", message = "El nombre de usuario solo puede contener letras, números, puntos y guiones bajos")
+    private String userName;
 }
