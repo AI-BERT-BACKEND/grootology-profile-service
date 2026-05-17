@@ -50,7 +50,7 @@ class ProfileControllerTest {
         doNothing().when(updateProfileUseCase).updateProfile(any(), any(), any());
 
         ResponseEntity<Map<String, String>> result =
-                profileController.updateProfile(userId, mock(UpdateProfileDTO.class), null);
+                profileController.updateProfile(userId, mock(UpdateProfileDTO.class));
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody().get("message"));
