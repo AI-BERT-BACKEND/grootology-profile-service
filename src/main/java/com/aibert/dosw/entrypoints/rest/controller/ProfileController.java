@@ -35,10 +35,17 @@ public class ProfileController {
     @PutMapping("/{userId}")
     public ResponseEntity<Map<String, String>> updateProfile(
             @PathVariable UUID userId,
-            @Valid @RequestPart(value = "data") UpdateProfileDTO dto,
-            @RequestPart(value = "photo", required = false) MultipartFile photo) {
-        updateProfileUseCase.updateProfile(userId, dto, photo);
+            @Valid @RequestBody UpdateProfileDTO dto) {
+        updateProfileUseCase.updateProfile(userId, dto, null);
         return ResponseEntity.ok(Map.of("message", "Perfil actualizado exitosamente."));
+    }
+
+    @PutMapping(value = "/{userId}/photo", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, String>> updateProfilePhoto(
+            @PathVariable UUID userId,
+            @RequestPart(value = "photo") MultipartFile photo) {
+        updateProfileUseCase.updateProfile(userId, new UpdateProfileDTO(), photo);
+        return ResponseEntity.ok(Map.of("message", "Foto actualizada exitosamente."));
     }
 
     @PutMapping("/{userId}/password")

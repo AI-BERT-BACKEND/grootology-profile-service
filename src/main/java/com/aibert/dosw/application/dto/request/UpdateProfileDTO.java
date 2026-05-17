@@ -3,8 +3,10 @@ package com.aibert.dosw.application.dto.request;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class UpdateProfileDTO {
 
     @Size(min = 3, max = 30, message = "El nombre de usuario debe tener entre 3 y 30 caracteres")
