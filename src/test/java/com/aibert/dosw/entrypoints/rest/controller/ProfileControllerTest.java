@@ -3,6 +3,7 @@ package com.aibert.dosw.entrypoints.rest.controller;
 import com.aibert.dosw.application.dto.request.AcademicProfileDTO;
 import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
 import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
+import org.springframework.mock.web.MockMultipartFile;
 import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
 import com.aibert.dosw.domain.ports.in.AcademicProfileUseCase;
 import com.aibert.dosw.domain.ports.in.DeleteAccountUseCase;
@@ -62,6 +63,18 @@ class ProfileControllerTest {
 
         ResponseEntity<Map<String, String>> result =
                 profileController.changePassword(userId, mock(PasswordChangeDTO.class));
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody().get("message"));
+    }
+
+    @Test
+    void updateProfilePhoto_exitoso_retornaMensaje() {
+        doNothing().when(updateProfileUseCase).updateProfile(any(), any(), any());
+        MockMultipartFile photo = new MockMultipartFile("photo", "foto.jpg", "image/jpeg", new byte[1024]);
+
+        ResponseEntity<Map<String, String>> result =
+                profileController.updateProfilePhoto(userId, photo);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody().get("message"));
