@@ -14,7 +14,10 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
-                .info(new Info().title("Profile Service API").version("1.0.0"))
+                .info(new Info()
+                        .title("AIBERT — Profile Service API")
+                        .version("1.0.0")
+                        .description("Manages all user data within the AIBERT platform: registration, email verification, personal and academic profile, password management, account deletion, and admin operations."))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer"))
                 .components(new Components().addSecuritySchemes("Bearer",
                         new SecurityScheme()
