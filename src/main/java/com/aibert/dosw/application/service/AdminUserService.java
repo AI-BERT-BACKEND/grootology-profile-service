@@ -8,10 +8,13 @@ import com.aibert.dosw.domain.model.user.Role;
 import com.aibert.dosw.domain.model.user.User;
 import com.aibert.dosw.domain.model.user.UserStatus;
 import com.aibert.dosw.domain.ports.in.AdminUserUseCase;
+import com.aibert.dosw.domain.ports.out.AuditLogPort;
 import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 public class AdminUserService implements AdminUserUseCase {
 
     private final UserRepositoryPort userRepository;
+    private final AuditLogPort auditLogPort;
 
     @Override
     public List<UserSummaryDTO> listUsers(String name, String email, String status, String role) {
@@ -44,10 +48,34 @@ public class AdminUserService implements AdminUserUseCase {
         if (userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
             throw new IllegalArgumentException("El correo ya está asociado a otra cuenta");
         }
+
+        List<String> changedFields = new ArrayList<>();
+        StringBuilder previousValues = new StringBuilder("{");
+        if (!user.getFullName().equals(request.getFullName())) {
+            changedFields.add("fullName");
+            previousValues.append("\"fullName\":\"").append(user.getFullName()).append("\",");
+        }
+        if (!user.getEmail().equals(request.getEmail())) {
+            changedFields.add("email");
+            previousValues.append("\"email\":\"").append(user.getEmail()).append("\",");
+        }
+        if (previousValues.length() > 1) {
+            previousValues.deleteCharAt(previousValues.length() - 1);
+        }
+        previousValues.append("}");
+
         User updated = copyWith(user, u -> u
                 .fullName(request.getFullName())
                 .email(request.getEmail()));
-        return toSummary(userRepository.save(updated));
+        UserSummaryDTO result = toSummary(userRepository.save(updated));
+
+        if (!changedFields.isEmpty()) {
+            try {
+                auditLogPort.save(adminId, userId, String.join(",", changedFields),
+                        previousValues.toString(), LocalDateTime.now());
+            } catch (Exception ignored) {}
+        }
+        return result;
     }
 
     @Override
