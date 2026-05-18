@@ -24,15 +24,3 @@ public class PasswordChangeDTO {
     @Schema(description = "Must match the newPassword field exactly", example = "NewPassword1")
     private String confirmNewPassword;
 }
-
-    @NotBlank
-    private String currentPassword;
-
-    @NotBlank
-    @Size(min = 8)
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$", message = "Mínimo 8 caracteres, una mayúscula, una minúscula y un número")
-    private String newPassword;
-
-    @NotBlank
-    private String confirmNewPassword;
-}

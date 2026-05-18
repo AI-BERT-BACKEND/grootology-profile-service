@@ -16,8 +16,3 @@ public class UpdateProfileDTO {
     @Schema(description = "New username. Between 3 and 30 characters. Only letters, numbers, dots, and underscores allowed.", example = "nicolas.parrado")
     private String userName;
 }
-
-    @Size(min = 3, max = 30, message = "El nombre de usuario debe tener entre 3 y 30 caracteres")
-    @Pattern(regexp = "^[a-zA-Z0-9._]+$", message = "El nombre de usuario solo puede contener letras, números, puntos y guiones bajos")
-    private String userName;
-}
