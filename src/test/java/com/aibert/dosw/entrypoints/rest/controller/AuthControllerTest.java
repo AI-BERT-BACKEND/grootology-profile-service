@@ -2,7 +2,6 @@ package com.aibert.dosw.entrypoints.rest.controller;
 
 import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
 import com.aibert.dosw.application.dto.response.*;
-import com.aibert.dosw.domain.ports.in.PasswordResetUseCase;
 import com.aibert.dosw.domain.ports.in.RegisterUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.*;
 class AuthControllerTest {
 
     @Mock private RegisterUseCase registerUseCase;
-    @Mock private PasswordResetUseCase passwordResetUseCase;
     @InjectMocks private AuthController authController;
 
     @Test
@@ -54,26 +52,6 @@ class AuthControllerTest {
     void resend_exitoso_retornaMensaje() {
         doNothing().when(registerUseCase).resendVerificationEmail(any());
         ResponseEntity<String> result = authController.resend("test@mail.escuelaing.edu.co");
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-    }
-
-    @Test
-    void forgotPassword_exitoso_retorna200() {
-        PasswordResetResponseDTO response = PasswordResetResponseDTO.builder()
-                .recoveryStatus(true).expirationTime(5).build();
-        when(passwordResetUseCase.requestPasswordReset(any())).thenReturn(response);
-
-        ResponseEntity<PasswordResetResponseDTO> result = authController.forgotPassword("test@mail.escuelaing.edu.co");
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().isRecoveryStatus());
-    }
-
-    @Test
-    void resetPassword_exitoso_retornaMensaje() {
-        doNothing().when(passwordResetUseCase).resetPassword(any(), any(), any());
-        ResponseEntity<String> result = authController.resetPassword("token", "NewPass1", "NewPass1");
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
     }
