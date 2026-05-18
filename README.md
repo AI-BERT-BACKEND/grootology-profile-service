@@ -17,6 +17,8 @@
 ![Azure](https://img.shields.io/badge/Azure-Cloud-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
+![SonarCloud](https://img.shields.io/badge/SonarCloud-Analysis-F3702A?style=for-the-badge&logo=sonarcloud&logoColor=white)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-Coverage-brightgreen?style=for-the-badge)
 
 ### 🏗️ Arquitectura
 
@@ -54,9 +56,9 @@
 
 ## 2. 🎯 Objetivo del microservicio
 
-El **Profile Service** tiene como objetivo gestionar la información asociada al usuario dentro de la plataforma AIBERT. Este microservicio es responsable del **registro de nuevos usuarios**, así como de la **consulta y actualización del perfil personal y académico**.
+Este servicio es el que sabe todo sobre el usuario: quién es, qué estudia, qué quiere lograr. Se encarga del registro, del perfil personal y académico, de cambiar contraseña, de recuperarla si la olvidaste, y hasta de borrar la cuenta si querés.
 
-Actúa como la fuente única de verdad de los datos del usuario, manteniendo desacoplada esta responsabilidad del proceso de autenticación, el cual es gestionado por el Authentication Service.
+El auth-service te deja entrar, pero este es el que guarda y gestiona tus datos. Están separados a propósito para que cada uno haga una sola cosa bien.
 
 ---
 
@@ -68,21 +70,41 @@ Actúa como la fuente única de verdad de los datos del usuario, manteniendo des
   <thead>
     <tr>
       <th>🧩 Funcionalidad</th>
-      <th>Descripción</th>
+      <th>¿Qué hace?</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><strong>Registro de Usuario</strong></td>
-      <td>Permite crear un nuevo usuario en el sistema y almacenar su información básica.</td>
+      <td>Crea la cuenta y manda un email para verificarla.</td>
+    </tr>
+    <tr>
+      <td><strong>Verificación de Email</strong></td>
+      <td>Activa la cuenta con el token que llegó al correo.</td>
     </tr>
     <tr>
       <td><strong>Gestión de Perfil Personal</strong></td>
-      <td>Consulta y actualización de datos personales del usuario.</td>
+      <td>Ver y actualizar nombre, foto y datos básicos.</td>
     </tr>
     <tr>
       <td><strong>Gestión de Perfil Académico</strong></td>
-      <td>Registro y modificación de información académica relevante para el sistema.</td>
+      <td>Carrera, semestre, metas y disponibilidad — lo que usan otros servicios como Gamificación.</td>
+    </tr>
+    <tr>
+      <td><strong>Cambio de Contraseña</strong></td>
+      <td>Cambiar la contraseña estando autenticado.</td>
+    </tr>
+    <tr>
+      <td><strong>Recuperación de Contraseña</strong></td>
+      <td>Si la olvidaste, te mandamos un email con un token para resetearla.</td>
+    </tr>
+    <tr>
+      <td><strong>Eliminación de Cuenta</strong></td>
+      <td>El usuario puede borrar su propia cuenta.</td>
+    </tr>
+    <tr>
+      <td><strong>Administración de Usuarios</strong></td>
+      <td>Los admins pueden ver, editar y cambiar roles de cualquier cuenta.</td>
     </tr>
   </tbody>
 </table>
@@ -93,165 +115,148 @@ Actúa como la fuente única de verdad de los datos del usuario, manteniendo des
 
 ## 4. 📋 Manejo de Estrategia de versionamiento y branches
 
-Para el desarrollo del **Profile Service** se utiliza una estrategia de control de versiones basada en **Git Flow**, la cual permite organizar el trabajo del equipo y mantener una separación clara entre el desarrollo de nuevas funcionalidades y las versiones estables del microservicio.
+Usamos **Git Flow** para no pisarnos entre nosotros y tener siempre una versión estable lista.
 
-Esta estrategia ha sido clave para gestionar cambios relacionados con el registro de usuarios, la administración del perfil personal y académico, así como tareas técnicas de infraestructura y automatización.
+### Ramas que manejamos
 
-### Estrategia de Ramas (Git Flow)
+- `main` — lo que está en producción, no se toca directamente.
+- `develop` — acá se integra todo antes de subir a main.
+- `feature/*` — una rama por cada cosa que estemos haciendo.
 
-El repositorio maneja principalmente las siguientes ramas:
+Algunas ramas que usamos:
+- `feature/profile-ci-cd`
+- `feature/dockerizacion`
+- `feature/nuevos-requerimientos`
 
-- `main`
-- `develop`
-- `feature/*`
+### Cómo trabajamos
 
-El trabajo diario se ha concentrado en ramas de tipo `feature/*`, las cuales permiten aislar funcionalidades específicas y reducir conflictos durante la integración.
-
-### Ramas y propósito
-
-#### `main`
-- Contiene la versión estable del **Profile Service**.
-- Se utiliza como referencia para despliegues y demostraciones.
-- No se realizan desarrollos directos sobre esta rama.
-- Los cambios llegan a `main` únicamente después de haber sido integrados y validados en `develop`.
-
-#### `develop`
-- Rama utilizada para integrar las funcionalidades en desarrollo.
-- Sirve como base para crear nuevas ramas `feature/*`.
-- Permite validar la correcta integración de cambios relacionados con el manejo del perfil antes de considerarlos estables.
-
-#### `feature/*`
-- Ramas destinadas al desarrollo de funcionalidades específicas y tareas técnicas.
-- Se crean a partir de `develop` y se integran nuevamente mediante Pull Requests.
-- Ejemplos de ramas utilizadas en este microservicio:
-    - `feature/dockerizacion`: contenedorización del Profile Service mediante Docker.
-    - `feature/nuevos-requerimientos`: ajustes funcionales derivados de cambios en los requerimientos.
-    - `feature/profile-ci-cd`: configuración del pipeline de integración continua.
-
-Este enfoque permitió desarrollar cada cambio de forma aislada, facilitando su revisión e integración.
-
-### Flujo de trabajo general
-
-1. Se crea una rama `feature/*` a partir de `develop`.
-2. Se implementan los cambios asociados a una funcionalidad o tarea específica.
-3. Se validan los cambios de forma local.
-4. Se genera un Pull Request hacia `develop`.
-5. Una vez consolidadas las funcionalidades, `develop` se integra en `main` para actualizar la versión estable.
-
-Esta estrategia ha permitido mantener un flujo de desarrollo ordenado, claro y consistente a lo largo del desarrollo del **Profile Service**.
+1. Crear rama `feature/*` desde `develop`.
+2. Implementar y probar local.
+3. Abrir PR hacia `develop`.
+4. Cuando `develop` está estable, se mergea a `main`.
 
 ---
 
 ## 5. ⚙️ Tecnologías Utilizadas
 
-| Tecnología | Uso principal |
-|----------|---------------|
-| **Java 21** | Lenguaje base del microservicio |
-| **Spring Boot** | Framework principal para la exposición de APIs REST |
-| **Spring Data JPA** | Acceso y persistencia de datos |
-| **PostgreSQL** | Base de datos relacional |
-| **Maven** | Gestión de dependencias |
-| **Docker** | Contenerización |
-| **GitHub Actions** | Integración continua |
+| Tecnología | Para qué la usamos |
+|------------|-------------------|
+| **Java 21** | Lenguaje base. |
+| **Spring Boot 3.4.3** | El framework que levanta todo. |
+| **Spring Security** | Filtro JWT y configuración de seguridad. |
+| **Spring Data JPA** | Para hablar con la base de datos sin tanto boilerplate. |
+| **PostgreSQL** | Donde guardamos usuarios y tokens. |
+| **MapStruct** | Mapeo entre dominio y persistencia sin escribir código a mano. |
+| **Spring Mail (SMTP)** | Para mandar los emails de verificación y recuperación. |
+| **Apache Maven** | Build y dependencias. |
+| **Docker** | Para correr el servicio en cualquier lado. |
+| **GitHub Actions** | El pipeline de CI/CD. |
+| **SonarCloud** | Análisis de calidad del código. |
+| **JaCoCo** | Ver qué tan bien cubrimos con los tests. |
 
 ---
 
 ## 6. 🧩 Funcionalidad
 
-### 📝 Registro de Usuario
+### 📝 Registro
 
-Permite crear un nuevo usuario dentro del sistema AIBERT a partir de la información suministrada. Este proceso corresponde únicamente a la **gestión de datos del usuario**, mientras que la autenticación posterior es responsabilidad del Authentication Service.
+Creás la cuenta con nombre, email y contraseña. El servicio guarda todo y te manda un email para verificar.
 
-**Endpoint principal:**  
-`POST /api/users/register`
+**Endpoint:** `POST /api/auth/register`
 
----
-
-### 📦 Estructura de la Solicitud (Request)
+### 📦 Request
 
 <div align="center">
 
 | 🏷️ Campo | 🗃️ Tipo | ⚠️ Restricción | 📝 Descripción |
 |--------|--------|:-------------:|---------------|
-| email | String | Obligatorio | Correo electrónico del usuario |
-| password | String | Obligatorio | Contraseña inicial del usuario |
-| fullName | String | Obligatorio | Nombre completo del usuario |
+| email | String | Obligatorio | Tu correo |
+| password | String | Obligatorio | Tu contraseña |
+| fullName | String | Obligatorio | Tu nombre completo |
 
 </div>
 
----
-
-### 📦 Estructura de la Respuesta (Response)
+### 📦 Response
 
 <div align="center">
 
 | 🏷️ Campo | 🗃️ Tipo | 📝 Descripción |
 |--------|--------|---------------|
-| userId | UUID | Identificador único del usuario creado |
-| message | String | Confirmación del registro exitoso |
+| userId | UUID | El ID del usuario recién creado |
+| message | String | Confirmación de que todo salió bien |
 
 </div>
 
 ---
 
-### 👤 Gestión de Perfil Personal
+### 👤 Perfil Personal
 
-Permite consultar y actualizar la información personal del usuario autenticado, como nombre u otros datos asociados al perfil.
+Ver y actualizar tus datos básicos.
 
-**Endpoints principales:**
-- `GET /api/users/profile`
-- `PUT /api/users/profile`
+**Endpoints:**
+- `GET /api/profile` — ver tu perfil
+- `PUT /api/profile` — actualizar tus datos
 
-Estos endpoints permiten recuperar y modificar la información personal persistida del usuario, garantizando que solo el propietario del perfil pueda realizar cambios.
-
----
-
-### 📦 Estructura de Actualización de Perfil (Request)
+### 📦 Request (actualización)
 
 <div align="center">
 
 | 🏷️ Campo | 🗃️ Tipo | ⚠️ Restricción | 📝 Descripción |
 |--------|--------|:-------------:|---------------|
-| fullName | String | Opcional | Nombre completo actualizado |
-| avatarUrl | String | Opcional | URL de la imagen de perfil |
+| fullName | String | Opcional | Nombre actualizado |
+| avatarUrl | String | Opcional | URL de tu foto de perfil |
 
 </div>
 
 ---
 
-### 🎓 Gestión de Perfil Académico
+### 🎓 Perfil Académico
 
-Permite registrar y actualizar la información académica del usuario, la cual es utilizada por otros microservicios como Recomendaciones y Gamificación.
+Tu info académica: carrera, semestre, metas y disponibilidad. Otros servicios como Gamificación la usan para personalizar la experiencia.
 
-**Endpoint principal:**  
-`PUT /api/users/profile/academic`
+**Endpoint:** `PUT /api/profile/academic`
 
----
-
-### 📦 Estructura del Perfil Académico (Request)
+### 📦 Request
 
 <div align="center">
 
 | 🏷️ Campo | 🗃️ Tipo | ⚠️ Restricción | 📝 Descripción |
 |--------|--------|:-------------:|---------------|
-| program | String | Obligatorio | Programa académico |
+| career | String | Obligatorio | Tu carrera |
 | semester | Integer | Obligatorio | Semestre actual |
-| workload | Integer | Opcional | Carga académica estimada |
+| academicGoal | String | Opcional | Qué querés lograr |
+| availability | String | Opcional | Cuándo tenés tiempo |
 
 </div>
+
+---
+
+### 🔑 Recuperación de Contraseña
+
+Dos pasos: pedís el reset (te llega un email con token) y luego confirmás la nueva contraseña.
+
+**Endpoints:**
+- `POST /api/auth/forgot-password` — pedir el reset
+- `POST /api/auth/reset-password` — confirmar la nueva contraseña con el token
+
+---
+
+### 🛡️ Administración de Usuarios
+
+Solo para admins. Pueden ver todos los usuarios, editarlos y cambiarles el rol.
+
+**Endpoints:**
+- `GET /api/admin/users` — listar usuarios
+- `PUT /api/admin/users/{id}` — editar usuario
+- `PUT /api/admin/users/{id}/role` — cambiar rol
 
 ---
 
 ## 7. 📊 Diagramas
 
+### 🧱 Diagrama de Clases
 
----
-
-### 🧱 Diagrama de Clases — Profile Service
-
-El diagrama de clases representa la organización interna del microservicio y las principales entidades involucradas en la gestión del perfil del usuario.
-
-En él se observa cómo los controladores delegan las operaciones de registro y actualización del perfil a los casos de uso correspondientes, el manejo de DTOs de entrada y salida, las entidades de dominio relacionadas con el usuario y las excepciones asociadas a las reglas de negocio del servicio.
+Cómo está organizado el código por capas y cómo se conectan los controladores con los casos de uso.
 
 <div align="center">
 
@@ -261,15 +266,9 @@ En él se observa cómo los controladores delegan las operaciones de registro y 
 
 ---
 
-### 🧩 Diagrama de Componentes — Profile Service
+### 🧩 Diagrama de Componentes
 
-El diagrama de componentes muestra la interacción entre los distintos componentes del microservicio durante las operaciones de registro y gestión del perfil.
-
-El flujo evidencia la separación de responsabilidades entre:
-- Controladores de entrada
-- Servicios de aplicación y casos de uso
-- Puertos de acceso a persistencia
-- Adaptadores encargados de la comunicación con la base de datos
+Cómo interactúan los componentes durante el registro y la gestión del perfil.
 
 <div align="center">
 
@@ -279,11 +278,9 @@ El flujo evidencia la separación de responsabilidades entre:
 
 ---
 
-### 🔁 Diagrama de Secuencia — Registro de Usuario
+### 🔁 Diagrama de Secuencia — Registro
 
-Este diagrama de secuencia describe el flujo completo del proceso de **registro de un nuevo usuario**. El proceso inicia cuando el cliente envía la información de registro al controlador correspondiente, el cual delega la operación al caso de uso encargado de crear el usuario.
-
-El flujo incluye la validación de datos, la persistencia del usuario en la base de datos y la generación de la respuesta que confirma el registro exitoso.
+El flujo completo del registro: desde que llegan los datos hasta que se guarda el usuario y sale el email de verificación.
 
 <div align="center">
 
@@ -295,9 +292,7 @@ El flujo incluye la validación de datos, la persistencia del usuario en la base
 
 ### 🔁 Diagrama de Secuencia — Actualización de Perfil Personal
 
-El siguiente diagrama muestra el flujo de **actualización de la información personal del usuario**, incluyendo la validación del usuario autenticado y la persistencia de los datos actualizados.
-
-Este flujo garantiza que únicamente el propietario del perfil pueda modificar su información personal dentro del sistema.
+Cómo fluye la actualización de datos personales, validando que sea el dueño del perfil.
 
 <div align="center">
 
@@ -309,9 +304,7 @@ Este flujo garantiza que únicamente el propietario del perfil pueda modificar s
 
 ### 🔁 Diagrama de Secuencia — Actualización de Perfil Académico
 
-Este diagrama de secuencia representa el proceso de **actualización de la información académica del usuario**, utilizada posteriormente por otros microservicios como Recomendaciones y Gamificación.
-
-El flujo describe la recepción de la solicitud, la validación de los datos académicos y la persistencia de la información actualizada.
+El flujo de actualización de info académica que luego consumen otros servicios.
 
 <div align="center">
 
@@ -323,53 +316,53 @@ El flujo describe la recepción de la solicitud, la validación de los datos aca
 
 ## 8. ⚠️ Manejo de Errores
 
-El **Profile Service** implementa un mecanismo centralizado de manejo de errores con el objetivo de garantizar respuestas claras, consistentes y seguras ante los distintos escenarios que pueden ocurrir durante la gestión de la información del usuario.
-
-Mediante un **manejador global de excepciones** (`@ControllerAdvice`), el servicio intercepta errores tanto de validación como del dominio de negocio, evitando exponer detalles internos del sistema y manteniendo un formato de respuesta uniforme para el cliente.
-
-Este enfoque permite que el frontend y los demás microservicios puedan manejar los errores de forma predecible y desacoplada de la implementación interna del servicio.
-
----
-
-### 📊 Tipos de errores manejados
+Hay un `@ControllerAdvice` que atrapa todos los errores y devuelve respuestas limpias y consistentes, sin exponer nada interno.
 
 <div align="center">
 
-| 🔢 Código HTTP | ⚠️ Escenario |
+| 🔢 Código HTTP | ⚠️ Cuándo pasa |
 |:-------------:|:------------|
-| **400 Bad Request** | Datos inválidos en la petición, campos obligatorios faltantes o formatos incorrectos durante el registro o actualización del perfil. |
-| **404 Not Found** | Usuario no encontrado al intentar consultar o actualizar información del perfil. |
-| **409 Conflict** | Conflictos durante el registro de un nuevo usuario, como intentos de crear un usuario con información ya existente. |
-| **500 Internal Server Error** | Error inesperado en el servidor durante operaciones de registro o actualización del perfil. |
+| **400 Bad Request** | Faltan campos, el formato está mal o la contraseña es incorrecta. |
+| **401 Unauthorized** | Token JWT inválido o expirado. |
+| **404 Not Found** | No se encontró el usuario. |
+| **409 Conflict** | El email ya está registrado. |
+| **500 Internal Server Error** | Algo explotó en el servidor. |
 
 </div>
 
 ---
 
-Cuando ocurre un error, el servicio retorna únicamente la información necesaria para que el cliente pueda tomar acciones correctivas, sin revelar información sensible o detalles técnicos internos, reforzando así las buenas prácticas de seguridad y manejo de excepciones dentro de la plataforma **AIBERT**.
-
----
-
 ## 9. 🧪 Evidencia de Pruebas y Ejecución
 
-El microservicio cuenta con **pruebas unitarias** sobre los casos de uso principales.
+Tenemos pruebas unitarias para todo lo importante:
 
+- `RegisterService` — registro y validaciones.
+- `UpdateProfileService` — actualización de perfil.
+- `AcademicProfileService` — perfil académico.
+- `PasswordResetService` — recuperación de contraseña.
+- `AdminUserService` — administración de usuarios.
+- `DeleteAccountService` — eliminación de cuenta.
+- `AuthController`, `ProfileController`, `AdminController` — los endpoints.
+- `GlobalExceptionHandler` — que los errores se manejen bien.
+- `JwtAuthFilter` — el filtro de autenticación.
+- `UserRepositoryAdapter` — el adaptador de persistencia.
 
-### 🚀 Cómo ejecutar las pruebas
-
-#### 1️⃣ Ejecutar todas las pruebas unitarias
-
-El siguiente comando ejecuta todas las pruebas del microservicio:
+### 🚀 Cómo correr las pruebas
 
 ```bash
 mvn clean test
 ```
 
+Para ver el reporte de cobertura con JaCoCo:
+
+```bash
+mvn clean verify
+# El reporte queda en: target/site/jacoco/index.html
+```
+
 ---
 
 ## 10. 🗂️ Organización del Código (Scaffolding)
-
-El microservicio sigue una arquitectura hexagonal (puertos y adaptadores):
 
 ```
 profile-service/
@@ -379,61 +372,77 @@ profile-service/
 │   │   ├── 📁 java/com/aibert/dosw/
 │   │   │   ├── 📁 application/                     # 🔵 CAPA DE APLICACIÓN
 │   │   │   │   ├── 📁 dto/
-│   │   │   │   │   ├── 📁 request/                 # DTOs de entrada (Register, UpdateProfile, AcademicProfile)
-│   │   │   │   │   └── 📁 response/                # DTOs de salida asociados al perfil
-│   │   │   │   └── 📁 service/                     # Lógica de aplicación del perfil
+│   │   │   │   │   ├── 📁 request/                 # RegisterRequestDTO, UpdateProfileDTO, AcademicProfileDTO, PasswordChangeDTO, etc.
+│   │   │   │   │   └── 📁 response/                # RegisterResponseDTO, AcademicProfileResponseDTO, UserSummaryDTO, etc.
+│   │   │   │   └── 📁 service/                     # RegisterService, UpdateProfileService, AcademicProfileService,
+│   │   │   │                                       # PasswordResetService, AdminUserService, DeleteAccountService, FileUploadService
 │   │   │   │
-│   │   │   ├── 📁 config/                          # ⚙️ CONFIGURACIONES
-│   │   │   │                                   # Configuración de seguridad y beans necesarios
+│   │   │   ├── 📁 config/                          # ⚙️ JwtAuthFilter, SecurityConfig, SwaggerConfig
 │   │   │   │
 │   │   │   ├── 📁 domain/                          # 🟢 CAPA DE DOMINIO
-│   │   │   │   ├── 📁 exceptions/                  # Excepciones del dominio del perfil
-│   │   │   │   ├── 📁 model/user/                  # Entidad User y modelos asociados al perfil
-│   │   │   │   └── 📁 ports/                       # Puertos In / Out
-│   │   │   │       ├── 📁 in/                      # Casos de uso
-│   │   │   │       └── 📁 out/                     # Persistencia
+│   │   │   │   ├── 📁 exceptions/                  # EmailAlreadyRegistered, UserNotFound, InvalidPassword, InvalidToken
+│   │   │   │   ├── 📁 model/user/                  # User, Role, UserStatus, Career, AcademicGoal, Availability,
+│   │   │   │   │                                   # EmailVerificationToken, PasswordResetToken
+│   │   │   │   └── 📁 ports/in/                    # RegisterUseCase, UpdateProfileUseCase, AcademicProfileUseCase,
+│   │   │   │                                       # PasswordResetUseCase, AdminUserUseCase, DeleteAccountUseCase
 │   │   │   │
 │   │   │   ├── 📁 entrypoints/                     # 🔴 CAPA DE ENTRADA
-│   │   │   │   ├── 📁 restcontroller/              # Controladores REST del perfil
-│   │   │   │   └── 📁 advice/                      # Manejo global de errores
+│   │   │   │   ├── 📁 rest/controller/             # AuthController, ProfileController, AdminController
+│   │   │   │   └── 📁 advice/                      # GlobalExceptionHandler
 │   │   │   │
 │   │   │   ├── 📁 infrastructure/                  # 🟠 CAPA DE INFRAESTRUCTURA
-│   │   │   │   ├── 📁 adapters/
-│   │   │   │   │   └── 📁 adapter/                 # Implementaciones de los puertos
-│   │   │   │   └── 📁 persistence/
-│   │   │   │       ├── 📁 entity/                  # Entidades JPA
-│   │   │   │       ├── 📁 mapper/                  # Mapeadores dominio ↔ persistencia
-│   │   │   │       └── 📁 repository/              # Repositorios JPA
+│   │   │   │   ├── 📁 adapters/adapter/            # UserRepositoryAdapter, TokenRepositoryAdapter, PasswordResetTokenAdapter
+│   │   │   │   └── 📁 adapters/persistence/
+│   │   │   │       ├── 📁 entity/                  # UserEntity, EmailVerificationTokenEntity, PasswordResetTokenEntity
+│   │   │   │       ├── 📁 mapper/                  # UserPersistenceMapper, TokenPersistenceMapper, PasswordResetTokenMapper
+│   │   │   │       └── 📁 repository/              # UserJpaRepository, TokenJpaRepository, PasswordResetTokenJpaRepository
 │   │   │   │
-│   │   │   ├── 📁 external.email                  # Integración con servicios externos (correo)
+│   │   │   ├── 📁 infrastructure/external/email/   # SmtpEmailService — el que manda los correos
 │   │   │   │
-│   │   │   └── ProfileServiceApplication        # Punto de arranque Spring Boot
+│   │   │   └── ProfileServiceApplication
 │   │   │
-│   │   └── 📁 resources/                           # application.yml
+│   │   └── 📁 resources/                           # application.yml (perfiles: local, qa, prod)
 │   │
-│   └── 📁 test/                                    # 🧪 PRUEBAS UNITARIAS
+│   └── 📁 test/                                    # 🧪 Pruebas unitarias
 │
-└── pom.xml                                         # Configuración Maven
+└── pom.xml
 ```
 
 ---
 
 ## 11. 🚀 Ejecución del Proyecto
 
-### 📋 Prerrequisitos
+### 📋 Qué necesitás antes de arrancar
 - **Java 21**
 - **Maven 3.8+**
-- **Docker** (Opcional)
+- **PostgreSQL** corriendo (o tirá Docker)
+- Una cuenta SMTP para los emails
+- Las variables de entorno del `.env.example`
 
-### 🛠️ Opción 1: Ejecución Local (Maven)
+### Variables de entorno
+
+```env
+DB_URL=jdbc:postgresql://localhost:5432/profile_db
+DB_USER=postgres
+DB_PASSWORD=tu_password
+JWT_SECRET=tu_secreto_jwt
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tu_email@gmail.com
+MAIL_PASSWORD=tu_app_password
+APP_BASE_URL=http://localhost:8081
+```
+
+### 🛠️ Opción 1: Maven directo
 
 ```bash
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
-📍 **URL Local:** `http://localhost:8080` (o el puerto configurado)  
-📚 **Documentación API (Swagger):** `http://localhost:8080/swagger-ui.html`
 
-### 🐳 Opción 2: Ejecución con Docker (Si se incluye Dockerfile)
+📍 **Local:** `http://localhost:8081`
+📚 **Swagger:** `http://localhost:8081/swagger-ui.html`
+
+### 🐳 Opción 2: Docker Compose
 
 ```bash
 docker-compose up --build -d
@@ -443,15 +452,29 @@ docker-compose up --build -d
 
 ## 12. ☁️ CI/CD y Despliegue en Azure
 
-El proyecto tiene capacidad para desplegarse mediante GitHub Actions hacia Azure App Service o un entorno contenedorizado en la nube.
-Se definen perfiles como `dev` y `prod` en `application.yml` para gestionar la cadena de conexión de MongoDB y las keys de Gemini/Groq.
+El pipeline se activa solo con cada push o PR a `develop` o `main`. Los pasos son:
+
+1. **Compilation** — compila el proyecto.
+2. **Tests** — corre los tests con H2 en memoria y publica resultados.
+3. **Analysis** — genera el reporte JaCoCo y lo manda a SonarCloud.
+4. **Build & Push Image** — construye la imagen Docker y la sube a `ghcr.io`.
+5. **Deploy to QA** — despliega en Azure Container Apps cuando hay push a `develop`.
+6. **Deploy to PROD** — despliega en producción cuando hay push a `main`.
+
+### Secrets que necesitás configurar en GitHub
+
+| Secret | Para qué |
+|--------|----------|
+| `SONAR_TOKEN` | Análisis con SonarCloud |
+| `AZURE_CREDENCIALES_QA` | Deploy en QA |
+| `AZURE_CREDENCIALES_PROD` | Deploy en producción |
+| `GHCR_TOKEN` | Subir imagen a GitHub Container Registry |
 
 ---
 
 ## 13. 🤝 Contribuciones
 
-### Metodología
-Se utiliza **Scrum** con iteraciones cortas, asegurando entregas continuas y mejora de valor. Las ramas principales son protegidas y todos los PRs deben cumplir validación estática (SonarQube) y ejecutar pipelines de CI.
+Trabajamos con **Scrum** en iteraciones cortas. `main` y `develop` están protegidas — todo entra por PR y tiene que pasar el pipeline completo (compilación, tests y SonarCloud) antes de mergearse.
 
 <div align="center">
 
