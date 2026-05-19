@@ -71,6 +71,7 @@ public class InternalUserController {
     private UserAuthDTO toAuthDTO(User user) {
         return UserAuthDTO.builder()
                 .id(user.getId())
+                .fullName(user.getFullName())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .verified(user.isVerified())
