@@ -32,4 +32,6 @@ public class User {
     private String userName;
     private Integer passwordVersion;
     private LocalDateTime createdAt;
+    private Integer failedAttempts;
+    private LocalDateTime lockedUntil;
 }

@@ -69,6 +69,12 @@ public class UserEntity {
 
     private Integer passwordVersion;
 
+    @Column(name = "failed_attempts")
+    private Integer failedAttempts;
+
+    @Column(name = "locked_until")
+    private LocalDateTime lockedUntil;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 }
