@@ -48,6 +48,7 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(List.of(
                 "https://frontend-umber-seven-28.vercel.app",
                 "http://localhost:3000",
+                "http://localhost:5173", 
                 "https://aibert-gateway-qa.yellowwave-cb2d91fc.centralus.azurecontainerapps.io"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
