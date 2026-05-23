@@ -6,8 +6,10 @@ import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
 import com.aibert.dosw.domain.ports.in.RegisterUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Auth", description = "Endpoints for user registration and email verification")
+@Tag(name = "Authentication", description = "Manage the user registration and email verification: register, verify OTP, and resend verification codes (R01, R02, R03)")
 public class AuthController {
 
     private final RegisterUseCase registerUseCase;
@@ -44,7 +46,11 @@ public class AuthController {
     })
     @PostMapping("/verify-otp")
     public ResponseEntity<OtpVerificationResponseDTO> verifyOtp(
-            @Parameter(description = "ID of the user to verify") @RequestParam UUID userId,
+            @Parameter(
+                description = "UUID of the user to verify",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @RequestParam UUID userId,
             @Parameter(description = "6-digit OTP code sent to the user's email") @RequestParam String otp) {
         return ResponseEntity.ok(registerUseCase.verifyOtp(userId, otp));
     }

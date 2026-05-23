@@ -6,8 +6,10 @@ import com.aibert.dosw.application.dto.response.UserSummaryDTO;
 import com.aibert.dosw.domain.ports.in.AdminUserUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +24,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
-@Tag(name = "Admin", description = "Endpoints for administrator user management. All endpoints require ROLE_ADMIN.")
+@Tag(name = "Administration", description = "Manage the user administration: list, view details, edit, change status, delete users and modify roles (R09)")
 public class AdminController {
 
     private final AdminUserUseCase adminUserUseCase;
 
     @Operation(
             summary = "List all users",
-            description = "Returns a list of all registered users. Supports optional filtering by name, email, status, and role. All filters can be combined."
+            description = "Returns a list of all registered users. Supports optional filtering by name, email, status, and role. All filters can be combined.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User list returned successfully."),
@@ -47,7 +50,8 @@ public class AdminController {
 
     @Operation(
             summary = "Get user details",
-            description = "Returns the full details of a specific user by their ID."
+            description = "Returns the full details of a specific user by their ID.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User details returned successfully."),
@@ -57,13 +61,18 @@ public class AdminController {
     })
     @GetMapping("/{userId}")
     public ResponseEntity<UserSummaryDTO> getUserDetail(
-            @Parameter(description = "ID of the user to retrieve") @PathVariable UUID userId) {
+            @Parameter(
+                description = "UUID of the user to retrieve",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId) {
         return ResponseEntity.ok(adminUserUseCase.getUserDetail(userId));
     }
 
     @Operation(
             summary = "Edit user",
-            description = "Allows an admin to update the full name and institutional email of a user."
+            description = "Allows an admin to update the full name and institutional email of a user.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User updated successfully."),
@@ -75,7 +84,11 @@ public class AdminController {
     @PutMapping("/{userId}")
     public ResponseEntity<UserSummaryDTO> editUser(
             Authentication auth,
-            @Parameter(description = "ID of the user to edit") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user to edit",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Valid @RequestBody AdminEditUserRequestDTO request) {
         UUID adminId = UUID.fromString((String) auth.getCredentials());
         return ResponseEntity.ok(adminUserUseCase.editUser(adminId, userId, request));
@@ -83,7 +96,8 @@ public class AdminController {
 
     @Operation(
             summary = "Update user status",
-            description = "Changes the account status of a user. Accepted values: ACTIVE, INACTIVE, LOCKED."
+            description = "Changes the account status of a user. Accepted values: ACTIVE, INACTIVE, LOCKED.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User status updated successfully."),
@@ -95,7 +109,11 @@ public class AdminController {
     @PutMapping("/{userId}/status")
     public ResponseEntity<UserSummaryDTO> updateStatus(
             Authentication auth,
-            @Parameter(description = "ID of the user to update") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user to update",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Parameter(description = "New status: ACTIVE, INACTIVE, or LOCKED") @RequestParam String status) {
         UUID adminId = UUID.fromString((String) auth.getCredentials());
         return ResponseEntity.ok(adminUserUseCase.updateUserStatus(adminId, userId, status));
@@ -103,7 +121,8 @@ public class AdminController {
 
     @Operation(
             summary = "Delete user",
-            description = "Permanently deletes a user account from the system. This action is irreversible."
+            description = "Permanently deletes a user account from the system. This action is irreversible.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User deleted successfully."),
@@ -114,7 +133,11 @@ public class AdminController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Map<String, String>> deleteUser(
             Authentication auth,
-            @Parameter(description = "ID of the user to delete") @PathVariable UUID userId) {
+            @Parameter(
+                description = "UUID of the user to delete",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId) {
         UUID adminId = UUID.fromString((String) auth.getCredentials());
         adminUserUseCase.deleteUser(adminId, userId);
         return ResponseEntity.ok(Map.of("message", "Usuario eliminado exitosamente"));
@@ -122,7 +145,8 @@ public class AdminController {
 
     @Operation(
             summary = "Change user role",
-            description = "Updates the role of a user. Accepted values: ROLE_USER, ROLE_ADMIN."
+            description = "Updates the role of a user. Accepted values: ROLE_USER, ROLE_ADMIN.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Role updated successfully."),
@@ -134,7 +158,11 @@ public class AdminController {
     @PutMapping("/{userId}/role")
     public ResponseEntity<UserSummaryDTO> changeRole(
             Authentication auth,
-            @Parameter(description = "ID of the user whose role will be changed") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user whose role will be changed",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Valid @RequestBody ChangeRoleRequestDTO request) {
         UUID adminId = UUID.fromString((String) auth.getCredentials());
         return ResponseEntity.ok(adminUserUseCase.changeRole(adminId, userId, request));

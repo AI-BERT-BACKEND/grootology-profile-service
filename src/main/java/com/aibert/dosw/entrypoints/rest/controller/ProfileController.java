@@ -9,8 +9,10 @@ import com.aibert.dosw.domain.ports.in.DeleteAccountUseCase;
 import com.aibert.dosw.domain.ports.in.UpdateProfileUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
-@Tag(name = "Profile", description = "Endpoints for managing personal profile, academic profile, password change, and account deletion")
+@Tag(name = "Profile", description = "Manage the user profile data: personal info, academic profile, password change, and account deletion (R04, R05, R06, R07, R08)")
 public class ProfileController {
 
     private final AcademicProfileUseCase academicProfileUseCase;
@@ -33,7 +35,8 @@ public class ProfileController {
 
     @Operation(
             summary = "Save or update academic profile",
-            description = "Stores or updates the academic information of a user, including career, semester, GPA, current subjects, academic goals, availability, and study hours. This data is used by other services such as Gamification to personalize the experience."
+            description = "Stores or updates the academic information of a user, including career, semester, GPA, current subjects, academic goals, availability, and study hours. This data is used by other services such as Gamification to personalize the experience.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Academic profile saved successfully."),
@@ -43,14 +46,19 @@ public class ProfileController {
     })
     @PutMapping("/{userId}/academic")
     public ResponseEntity<AcademicProfileResponseDTO> saveAcademicProfile(
-            @Parameter(description = "ID of the user whose academic profile will be updated") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user whose academic profile will be updated",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Valid @RequestBody AcademicProfileDTO dto) {
         return ResponseEntity.ok(academicProfileUseCase.saveAcademicProfile(userId, dto));
     }
 
     @Operation(
             summary = "Update personal profile",
-            description = "Updates the username of the authenticated user. The username must be between 3 and 30 characters and can only contain letters, numbers, dots, and underscores."
+            description = "Updates the username of the authenticated user. The username must be between 3 and 30 characters and can only contain letters, numbers, dots, and underscores.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Profile updated successfully."),
@@ -60,7 +68,11 @@ public class ProfileController {
     })
     @PutMapping("/{userId}")
     public ResponseEntity<Map<String, String>> updateProfile(
-            @Parameter(description = "ID of the user to update") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user to update",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Valid @RequestBody UpdateProfileDTO dto) {
         updateProfileUseCase.updateProfile(userId, dto, null);
         return ResponseEntity.ok(Map.of("message", "Perfil actualizado exitosamente."));
@@ -68,7 +80,8 @@ public class ProfileController {
 
     @Operation(
             summary = "Update profile photo",
-            description = "Uploads and updates the profile photo of the user. The request must be sent as multipart/form-data with the image file in the 'photo' field."
+            description = "Uploads and updates the profile photo of the user. The request must be sent as multipart/form-data with the image file in the 'photo' field.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Photo updated successfully."),
@@ -78,7 +91,11 @@ public class ProfileController {
     })
     @PutMapping(value = "/{userId}/photo", consumes = "multipart/form-data")
     public ResponseEntity<Map<String, String>> updateProfilePhoto(
-            @Parameter(description = "ID of the user to update") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user to update",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Parameter(description = "Image file to set as profile photo") @RequestPart(value = "photo") MultipartFile photo) {
         updateProfileUseCase.updateProfile(userId, new UpdateProfileDTO(), photo);
         return ResponseEntity.ok(Map.of("message", "Foto actualizada exitosamente."));
@@ -86,7 +103,8 @@ public class ProfileController {
 
     @Operation(
             summary = "Change password",
-            description = "Changes the password of the authenticated user. Requires the current password for verification. The new password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number. All active sessions are invalidated after the change."
+            description = "Changes the password of the authenticated user. Requires the current password for verification. The new password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number. All active sessions are invalidated after the change.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Password changed successfully. All sessions invalidated."),
@@ -96,7 +114,11 @@ public class ProfileController {
     })
     @PutMapping("/{userId}/password")
     public ResponseEntity<Map<String, String>> changePassword(
-            @Parameter(description = "ID of the user changing the password") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user changing the password",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Valid @RequestBody PasswordChangeDTO dto) {
         updateProfileUseCase.changePassword(userId, dto);
         return ResponseEntity.ok(Map.of("message", "Contraseña actualizada. Todas las sesiones han sido cerradas."));
@@ -104,7 +126,8 @@ public class ProfileController {
 
     @Operation(
             summary = "Delete account",
-            description = "Permanently deletes the user's account. Requires the current password as confirmation. This action is irreversible and will invalidate all active sessions."
+            description = "Permanently deletes the user's account. Requires the current password as confirmation. This action is irreversible and will invalidate all active sessions.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Account deleted successfully."),
@@ -113,7 +136,11 @@ public class ProfileController {
     })
     @DeleteMapping("/{userId}")
     public ResponseEntity<Map<String, Object>> deleteAccount(
-            @Parameter(description = "ID of the user to delete") @PathVariable UUID userId,
+            @Parameter(
+                description = "UUID of the user to delete",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId,
             @Parameter(description = "Current password for confirmation") @RequestParam String currentPassword) {
         deleteAccountUseCase.deleteAccount(userId, currentPassword);
         return ResponseEntity.ok(Map.of("accountDeleted", true, "sessionInvalidated", true, "redirectLogin", true));
