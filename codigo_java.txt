@@ -1,0 +1,3178 @@
+﻿======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\ProfileServiceApplication.java
+======================================================================
+package com.aibert.dosw;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ProfileServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ProfileServiceApplication.class, args);
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\request\AcademicProfileDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.request;
+
+import com.aibert.dosw.domain.model.user.AcademicGoal;
+import com.aibert.dosw.domain.model.user.Availability;
+import com.aibert.dosw.domain.model.user.Career;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+
+@Getter
+public class AcademicProfileDTO {
+
+    @NotNull
+    private Career career;
+
+    private Career doubleDegreeCareer;
+
+    @NotNull
+    @Min(1) @Max(10)
+    private Integer currentSemester;
+
+    @NotNull
+    @DecimalMin("0.0") @DecimalMax("5.0")
+    private Double currentGpa;
+
+    @NotNull
+    @Min(1) @Max(10)
+    private Integer currentSubjects;
+
+    @NotNull
+    private AcademicGoal academicGoal;
+
+    @NotNull
+    private Boolean currentlyWorking;
+
+    @NotNull
+    private Availability availability;
+
+    @NotNull
+    @Min(1) @Max(12)
+    private Integer dailyStudyHours;
+
+    @NotNull
+    @Min(1) @Max(80)
+    private Integer weeklyHours;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\request\AdminEditUserRequestDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.request;
+
+import com.aibert.dosw.domain.model.user.Role;
+import com.aibert.dosw.domain.model.user.UserStatus;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+
+@Getter
+public class AdminEditUserRequestDTO {
+
+    @NotBlank
+    @Size(min = 3, max = 100)
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Solo letras y espacios")
+    private String fullName;
+
+    @NotBlank
+    @Email
+    @Pattern(regexp = "^[^@]+@mail\\.escuelaing\\.edu\\.co$", message = "Debe ser correo institucional")
+    private String email;
+
+    @NotNull
+    private Role role;
+
+    @NotNull
+    private UserStatus status;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\request\ChangeRoleRequestDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.request;
+
+import com.aibert.dosw.domain.model.user.Role;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+
+@Getter
+public class ChangeRoleRequestDTO {
+    @NotNull
+    private Role newRole;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\request\PasswordChangeDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+
+@Getter
+public class PasswordChangeDTO {
+
+    @NotBlank
+    private String currentPassword;
+
+    @NotBlank
+    @Size(min = 8)
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$", message = "Mínimo 8 caracteres, una mayúscula, una minúscula y un número")
+    private String newPassword;
+
+    @NotBlank
+    private String confirmNewPassword;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\request\RegisterRequestDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.request;
+
+import com.aibert.dosw.domain.model.user.Career;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+
+@Getter
+public class RegisterRequestDTO {
+
+    @NotBlank
+    @Size(min = 3, max = 100)
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Solo letras y espacios")
+    private String fullName;
+
+    @NotBlank
+    @Email
+    @Pattern(regexp = "^[^@]+@mail\\.escuelaing\\.edu\\.co$", message = "Debe ser un correo institucional @mail.escuelaing.edu.co")
+    private String email;
+
+    @NotNull
+    private Career career;
+
+    @NotBlank
+    @Size(min = 8)
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$", message = "Mínimo 8 caracteres, una mayúscula, una minúscula y un número")
+    private String password;
+
+    @NotBlank
+    private String confirmPassword;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\request\UpdateProfileDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.request;
+
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+
+@Getter
+public class UpdateProfileDTO {
+
+    @Size(min = 2, max = 50)
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Solo letras y espacios")
+    private String firstName;
+
+    @Size(min = 2, max = 50)
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Solo letras y espacios")
+    private String lastName;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\response\AcademicProfileResponseDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.response;
+
+import com.aibert.dosw.domain.model.user.AcademicGoal;
+import com.aibert.dosw.domain.model.user.Availability;
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class AcademicProfileResponseDTO {
+    private String career;
+    private String doubleDegreeCareer;
+    private Integer currentSemester;
+    private Integer weeklyHours;
+    private Integer dailyStudyHours;
+    private Double currentGpa;
+    private Integer currentSubjects;
+    private AcademicGoal academicGoal;
+    private Boolean currentlyWorking;
+    private Availability availability;
+    private boolean profileComplete;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\response\OtpVerificationResponseDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.response;
+
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class OtpVerificationResponseDTO {
+    private boolean verificationStatus;
+    private boolean accountStatus;
+    private long expirationTime;
+    private boolean resendAvailability;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\response\PasswordResetResponseDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.response;
+
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class PasswordResetResponseDTO {
+    private boolean recoveryStatus;
+    private int expirationTime;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\response\RegisterResponseDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.response;
+
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.UUID;
+
+@Getter
+@Builder
+public class RegisterResponseDTO {
+    private UUID id;
+    private String role;
+    private String message;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\dto\response\UserSummaryDTO.java
+======================================================================
+package com.aibert.dosw.application.dto.response;
+
+import com.aibert.dosw.domain.model.user.Role;
+import com.aibert.dosw.domain.model.user.UserStatus;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@Builder
+public class UserSummaryDTO {
+    private UUID id;
+    private String fullName;
+    private String email;
+    private Role role;
+    private UserStatus status;
+    private LocalDateTime createdAt;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\service\AcademicProfileService.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.AcademicProfileDTO;
+import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.ports.in.AcademicProfileUseCase;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class AcademicProfileService implements AcademicProfileUseCase {
+
+    private final UserRepositoryPort userRepository;
+
+    @Override
+    public AcademicProfileResponseDTO saveAcademicProfile(UUID userId, AcademicProfileDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        userRepository.save(User.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .verified(user.isVerified())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .career(dto.getCareer())
+                .doubleDegreeCareer(dto.getDoubleDegreeCareer())
+                .currentSemester(dto.getCurrentSemester())
+                .weeklyHours(dto.getWeeklyHours())
+                .dailyStudyHours(dto.getDailyStudyHours())
+                .currentGpa(dto.getCurrentGpa())
+                .currentSubjects(dto.getCurrentSubjects())
+                .academicGoal(dto.getAcademicGoal())
+                .currentlyWorking(dto.getCurrentlyWorking())
+                .availability(dto.getAvailability())
+                .profilePhotoUrl(user.getProfilePhotoUrl())
+                .profileComplete(true)
+                .passwordVersion(user.getPasswordVersion())
+                .createdAt(user.getCreatedAt())
+                .build());
+
+        return AcademicProfileResponseDTO.builder()
+                .career(dto.getCareer().name())
+                .doubleDegreeCareer(dto.getDoubleDegreeCareer() != null ? dto.getDoubleDegreeCareer().name() : null)
+                .currentSemester(dto.getCurrentSemester())
+                .weeklyHours(dto.getWeeklyHours())
+                .dailyStudyHours(dto.getDailyStudyHours())
+                .currentGpa(dto.getCurrentGpa())
+                .currentSubjects(dto.getCurrentSubjects())
+                .academicGoal(dto.getAcademicGoal())
+                .currentlyWorking(dto.getCurrentlyWorking())
+                .availability(dto.getAvailability())
+                .profileComplete(true)
+                .build();
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\service\AdminUserService.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.AdminEditUserRequestDTO;
+import com.aibert.dosw.application.dto.request.ChangeRoleRequestDTO;
+import com.aibert.dosw.application.dto.response.UserSummaryDTO;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.Role;
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.model.user.UserStatus;
+import com.aibert.dosw.domain.ports.in.AdminUserUseCase;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class AdminUserService implements AdminUserUseCase {
+
+    private final UserRepositoryPort userRepository;
+
+    @Override
+    public List<UserSummaryDTO> listUsers(String name, String email, String status, String role) {
+        UserStatus userStatus = status != null ? UserStatus.valueOf(status) : null;
+        return userRepository.findByFilters(name, email, userStatus, role)
+                .stream().map(this::toSummary).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserSummaryDTO getUserDetail(UUID userId) {
+        return toSummary(userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new));
+    }
+
+    @Override
+    public UserSummaryDTO editUser(UUID adminId, UUID userId, AdminEditUserRequestDTO request) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (userRepository.existsByEmailAndIdNot(request.getEmail(), userId)) {
+            throw new IllegalArgumentException("El correo ya está asociado a otra cuenta");
+        }
+        User updated = copyWith(user, u -> u
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .role(request.getRole())
+                .status(request.getStatus()));
+        return toSummary(userRepository.save(updated));
+    }
+
+    @Override
+    public UserSummaryDTO updateUserStatus(UUID adminId, UUID userId, String newStatus) {
+        if (adminId.equals(userId)) {
+            throw new IllegalArgumentException("No puedes realizar esta acción sobre tu propia cuenta");
+        }
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User updated = copyWith(user, u -> u.status(UserStatus.valueOf(newStatus)));
+        return toSummary(userRepository.save(updated));
+    }
+
+    @Override
+    public void deleteUser(UUID adminId, UUID userId) {
+        if (adminId.equals(userId)) {
+            throw new IllegalArgumentException("No puedes realizar esta acción sobre tu propia cuenta");
+        }
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserSummaryDTO changeRole(UUID adminId, UUID userId, ChangeRoleRequestDTO request) {
+        if (adminId.equals(userId)) {
+            throw new IllegalArgumentException("No puedes modificar tu propio rol");
+        }
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (request.getNewRole() == Role.ADMIN && user.getRole() == Role.ADMIN) {
+            throw new IllegalArgumentException("El usuario ya tiene el rol ADMIN");
+        }
+        if (request.getNewRole() == Role.ESTUDIANTE && user.getRole() == Role.ESTUDIANTE) {
+            throw new IllegalArgumentException("El usuario ya tiene el rol ESTUDIANTE");
+        }
+        User updated = copyWith(user, u -> u.role(request.getNewRole()));
+        return toSummary(userRepository.save(updated));
+    }
+
+    private User copyWith(User user, java.util.function.UnaryOperator<User.UserBuilder> modifier) {
+        User.UserBuilder builder = User.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .verified(user.isVerified())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .career(user.getCareer())
+                .currentSemester(user.getCurrentSemester())
+                .weeklyHours(user.getWeeklyHours())
+                .currentGpa(user.getCurrentGpa())
+                .currentSubjects(user.getCurrentSubjects())
+                .academicGoal(user.getAcademicGoal())
+                .currentlyWorking(user.isCurrentlyWorking())
+                .profileComplete(user.isProfileComplete())
+                .profilePhotoUrl(user.getProfilePhotoUrl())
+                .passwordVersion(user.getPasswordVersion())
+                .createdAt(user.getCreatedAt());
+        return modifier.apply(builder).build();
+    }
+
+    private UserSummaryDTO toSummary(User user) {
+        return UserSummaryDTO.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\service\DeleteAccountService.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.domain.exceptions.InvalidPasswordException;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.ports.in.DeleteAccountUseCase;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class DeleteAccountService implements DeleteAccountUseCase {
+
+    private final UserRepositoryPort userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    @Override
+    public void deleteAccount(UUID userId, String currentPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        userRepository.deleteById(userId);
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\service\FileUploadService.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+@Service
+public class FileUploadService {
+
+    private static final long MAX_SIZE = 2 * 1024 * 1024L;
+    private static final String UPLOAD_DIR = "uploads/profiles/";
+
+    public String upload(MultipartFile file) {
+        if (file.getSize() > MAX_SIZE) {
+            throw new IllegalArgumentException("La imagen no puede superar 2 MB");
+        }
+        try {
+            Path dir = Paths.get(UPLOAD_DIR);
+            Files.createDirectories(dir);
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Files.copy(file.getInputStream(), dir.resolve(filename));
+            return UPLOAD_DIR + filename;
+        } catch (IOException e) {
+            throw new RuntimeException("Error al subir la imagen", e);
+        }
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\service\PasswordResetService.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.response.PasswordResetResponseDTO;
+import com.aibert.dosw.domain.exceptions.InvalidTokenException;
+import com.aibert.dosw.domain.model.user.PasswordResetToken;
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.ports.in.PasswordResetUseCase;
+import com.aibert.dosw.domain.ports.out.EmailServicePort;
+import com.aibert.dosw.domain.ports.out.PasswordResetTokenPort;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class PasswordResetService implements PasswordResetUseCase {
+
+    private static final int EXPIRY_MINUTES = 2;
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    private final UserRepositoryPort userRepository;
+    private final PasswordResetTokenPort tokenPort;
+    private final EmailServicePort emailService;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
+    @Override
+    public PasswordResetResponseDTO requestPasswordReset(String email) {
+        // RN-04: no revelar si el correo existe o no
+        userRepository.findByEmail(email).ifPresent(user -> {
+            String token = UUID.randomUUID().toString();
+            tokenPort.save(PasswordResetToken.builder()
+                    .token(token)
+                    .userId(user.getId())
+                    .expiresAt(LocalDateTime.now().plusMinutes(EXPIRY_MINUTES))
+                    .used(false)
+                    .build());
+            emailService.sendRecoveryEmail(email, baseUrl + "/api/auth/reset-password?token=" + token);
+        });
+
+        return PasswordResetResponseDTO.builder()
+                .recoveryStatus(true)
+                .expirationTime(EXPIRY_MINUTES)
+                .build();
+    }
+
+    @Override
+    public void resetPassword(String token, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Las contraseñas no coinciden");
+        }
+
+        PasswordResetToken resetToken = tokenPort.findByToken(token)
+                .orElseThrow(InvalidTokenException::new);
+
+        if (resetToken.isUsed() || resetToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException();
+        }
+
+        User user = userRepository.findById(resetToken.getUserId())
+                .orElseThrow(InvalidTokenException::new);
+
+        userRepository.save(User.builder()
+                .id(user.getId()).fullName(user.getFullName()).email(user.getEmail())
+                .password(passwordEncoder.encode(newPassword))
+                .verified(user.isVerified()).role(user.getRole()).status(user.getStatus())
+                .career(user.getCareer()).currentSemester(user.getCurrentSemester())
+                .weeklyHours(user.getWeeklyHours()).currentGpa(user.getCurrentGpa())
+                .currentSubjects(user.getCurrentSubjects()).academicGoal(user.getAcademicGoal())
+                .currentlyWorking(user.isCurrentlyWorking()).profileComplete(user.isProfileComplete())
+                .profilePhotoUrl(user.getProfilePhotoUrl())
+                .passwordVersion(user.getPasswordVersion() == null ? 1 : user.getPasswordVersion() + 1)
+                .createdAt(user.getCreatedAt()).build());
+
+        tokenPort.save(PasswordResetToken.builder()
+                .id(resetToken.getId()).token(resetToken.getToken())
+                .userId(resetToken.getUserId()).expiresAt(resetToken.getExpiresAt())
+                .used(true).build());
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\service\RegisterService.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
+import com.aibert.dosw.application.dto.response.OtpVerificationResponseDTO;
+import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
+import com.aibert.dosw.domain.exceptions.EmailAlreadyRegisteredException;
+import com.aibert.dosw.domain.exceptions.InvalidTokenException;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.EmailVerificationToken;
+import com.aibert.dosw.domain.model.user.Role;
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.ports.in.RegisterUseCase;
+import com.aibert.dosw.domain.ports.out.EmailServicePort;
+import com.aibert.dosw.domain.ports.out.TokenRepositoryPort;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class RegisterService implements RegisterUseCase {
+
+    private final UserRepositoryPort userRepository;
+    private final TokenRepositoryPort tokenRepository;
+    private final EmailServicePort emailService;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
+    @Override
+    public RegisterResponseDTO register(RegisterRequestDTO request) {
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Las contraseñas no coinciden");
+        }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyRegisteredException();
+        }
+
+        User user = userRepository.save(User.builder()
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .verified(false)
+                .role(Role.ESTUDIANTE)
+                .status(com.aibert.dosw.domain.model.user.UserStatus.ACTIVO)
+                .career(request.getCareer())
+                .profileComplete(false)
+                .createdAt(LocalDateTime.now())
+                .build());
+
+        sendVerificationToken(user);
+        return RegisterResponseDTO.builder()
+                .id(user.getId())
+                .role(user.getRole().name())
+                .message("Registro exitoso. Revisa tu correo para verificar tu cuenta.")
+                .build();
+    }
+
+    @Override
+    public void verifyEmail(String token) {
+        EmailVerificationToken verificationToken = tokenRepository.findByToken(token)
+                .orElseThrow(InvalidTokenException::new);
+
+        if (verificationToken.isUsed() || verificationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException();
+        }
+
+        User user = userRepository.findById(verificationToken.getUserId())
+                .orElseThrow(UserNotFoundException::new);
+
+        userRepository.save(User.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .verified(true)
+                .role(user.getRole())
+                .status(user.getStatus())
+                .career(user.getCareer())
+                .currentSemester(user.getCurrentSemester())
+                .weeklyHours(user.getWeeklyHours())
+                .profileComplete(user.isProfileComplete())
+                .profilePhotoUrl(user.getProfilePhotoUrl())
+                .createdAt(user.getCreatedAt())
+                .build());
+
+        tokenRepository.save(EmailVerificationToken.builder()
+                .id(verificationToken.getId())
+                .token(verificationToken.getToken())
+                .userId(verificationToken.getUserId())
+                .expiresAt(verificationToken.getExpiresAt())
+                .used(true)
+                .build());
+    }
+
+    @Override
+    public void resendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+        sendVerificationToken(user);
+    }
+
+    private static final int MAX_OTP_ATTEMPTS = 3;
+    private static final int OTP_LOCK_MINUTES = 15;
+    private static final int OTP_EXPIRY_MINUTES = 5;
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    private void sendVerificationToken(User user) {
+        String otp = String.format("%06d", RANDOM.nextInt(1_000_000));
+        tokenRepository.save(EmailVerificationToken.builder()
+                .token(otp)
+                .userId(user.getId())
+                .expiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES))
+                .used(false)
+                .failedAttempts(0)
+                .build());
+        emailService.sendVerificationEmail(user.getEmail(), otp);
+    }
+
+    @Override
+    public OtpVerificationResponseDTO verifyOtp(UUID userId, String otp) {
+        EmailVerificationToken token = tokenRepository.findLatestByUserId(userId)
+                .orElseThrow(InvalidTokenException::new);
+
+        if (token.getBlockedUntil() != null && LocalDateTime.now().isBefore(token.getBlockedUntil())) {
+            long secondsLeft = ChronoUnit.SECONDS.between(LocalDateTime.now(), token.getBlockedUntil());
+            return OtpVerificationResponseDTO.builder()
+                    .verificationStatus(false)
+                    .accountStatus(false)
+                    .expirationTime(secondsLeft)
+                    .resendAvailability(false)
+                    .build();
+        }
+
+        if (token.isUsed() || token.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return OtpVerificationResponseDTO.builder()
+                    .verificationStatus(false)
+                    .accountStatus(false)
+                    .expirationTime(0)
+                    .resendAvailability(true)
+                    .build();
+        }
+
+        if (!token.getToken().equals(otp)) {
+            int attempts = (token.getFailedAttempts() == null ? 0 : token.getFailedAttempts()) + 1;
+            LocalDateTime blockedUntil = attempts >= MAX_OTP_ATTEMPTS
+                    ? LocalDateTime.now().plusMinutes(OTP_LOCK_MINUTES) : null;
+            tokenRepository.save(EmailVerificationToken.builder()
+                    .id(token.getId())
+                    .token(token.getToken())
+                    .userId(token.getUserId())
+                    .expiresAt(token.getExpiresAt())
+                    .used(false)
+                    .failedAttempts(attempts >= MAX_OTP_ATTEMPTS ? 0 : attempts)
+                    .blockedUntil(blockedUntil)
+                    .build());
+            return OtpVerificationResponseDTO.builder()
+                    .verificationStatus(false)
+                    .accountStatus(false)
+                    .expirationTime(ChronoUnit.SECONDS.between(LocalDateTime.now(), token.getExpiresAt()))
+                    .resendAvailability(blockedUntil == null)
+                    .build();
+        }
+
+        User user = userRepository.findById(token.getUserId()).orElseThrow(UserNotFoundException::new);
+        userRepository.save(User.builder()
+                .id(user.getId()).fullName(user.getFullName()).email(user.getEmail())
+                .password(user.getPassword()).verified(true).role(user.getRole())
+                .status(user.getStatus()).career(user.getCareer())
+                .currentSemester(user.getCurrentSemester()).weeklyHours(user.getWeeklyHours())
+                .profileComplete(user.isProfileComplete()).profilePhotoUrl(user.getProfilePhotoUrl())
+                .createdAt(user.getCreatedAt()).build());
+
+        tokenRepository.save(EmailVerificationToken.builder()
+                .id(token.getId()).token(token.getToken()).userId(token.getUserId())
+                .expiresAt(token.getExpiresAt()).used(true).failedAttempts(0).build());
+
+        return OtpVerificationResponseDTO.builder()
+                .verificationStatus(true)
+                .accountStatus(true)
+                .expirationTime(0)
+                .resendAvailability(false)
+                .build();
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\application\service\UpdateProfileService.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
+import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
+import com.aibert.dosw.domain.exceptions.InvalidPasswordException;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.ports.in.UpdateProfileUseCase;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class UpdateProfileService implements UpdateProfileUseCase {
+
+    private final UserRepositoryPort userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final FileUploadService fileUploadService;
+
+    private static final long MAX_PHOTO_SIZE = 2 * 1024 * 1024L;
+
+    @Override
+    public void updateProfile(UUID userId, UpdateProfileDTO dto, MultipartFile photo) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        String photoUrl = user.getProfilePhotoUrl();
+        if (photo != null && !photo.isEmpty()) {
+            if (photo.getSize() > MAX_PHOTO_SIZE) {
+                throw new IllegalArgumentException("El archivo no debe superar los 2 MB");
+            }
+            String contentType = photo.getContentType();
+            if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
+                throw new IllegalArgumentException("Solo se aceptan archivos JPG, PNG o JPEG");
+            }
+            photoUrl = fileUploadService.upload(photo);
+        }
+
+        String fullName = user.getFullName();
+        if (dto.getFirstName() != null || dto.getLastName() != null) {
+            String first = dto.getFirstName() != null ? dto.getFirstName() : user.getFullName().split(" ")[0];
+            String last = dto.getLastName() != null ? dto.getLastName() : (user.getFullName().contains(" ") ? user.getFullName().substring(user.getFullName().indexOf(" ") + 1) : "");
+            fullName = (first + " " + last).trim();
+        }
+
+        userRepository.save(User.builder()
+                .id(user.getId())
+                .fullName(fullName)
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .verified(user.isVerified())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .career(user.getCareer())
+                .doubleDegreeCareer(user.getDoubleDegreeCareer())
+                .currentSemester(user.getCurrentSemester())
+                .weeklyHours(user.getWeeklyHours())
+                .dailyStudyHours(user.getDailyStudyHours())
+                .currentGpa(user.getCurrentGpa())
+                .currentSubjects(user.getCurrentSubjects())
+                .academicGoal(user.getAcademicGoal())
+                .currentlyWorking(user.isCurrentlyWorking())
+                .availability(user.getAvailability())
+                .profileComplete(user.isProfileComplete())
+                .profilePhotoUrl(photoUrl)
+                .passwordVersion(user.getPasswordVersion())
+                .createdAt(user.getCreatedAt())
+                .build());
+    }
+
+    @Override
+    public void changePassword(UUID userId, PasswordChangeDTO dto) {
+        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+            throw new IllegalArgumentException("Las contraseñas no coinciden");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        if (passwordEncoder.matches(dto.getNewPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("La nueva contraseña no puede ser igual a la actual");
+        }
+
+        userRepository.save(User.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(dto.getNewPassword()))
+                .verified(user.isVerified())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .career(user.getCareer())
+                .doubleDegreeCareer(user.getDoubleDegreeCareer())
+                .currentSemester(user.getCurrentSemester())
+                .weeklyHours(user.getWeeklyHours())
+                .dailyStudyHours(user.getDailyStudyHours())
+                .currentGpa(user.getCurrentGpa())
+                .currentSubjects(user.getCurrentSubjects())
+                .academicGoal(user.getAcademicGoal())
+                .currentlyWorking(user.isCurrentlyWorking())
+                .availability(user.getAvailability())
+                .profileComplete(user.isProfileComplete())
+                .profilePhotoUrl(user.getProfilePhotoUrl())
+                .passwordVersion(user.getPasswordVersion() == null ? 1 : user.getPasswordVersion() + 1)
+                .createdAt(user.getCreatedAt())
+                .build());
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\config\JwtAuthFilter.java
+======================================================================
+package com.aibert.dosw.config;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.List;
+
+@Component
+public class JwtAuthFilter extends OncePerRequestFilter {
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/auth/") || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")) {
+            chain.doFilter(request, response);
+            return;
+        }
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            try {
+                String token = header.substring(7);
+                Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+                Claims claims = Jwts.parserBuilder().setSigningKey(key).build()
+                        .parseClaimsJws(token).getBody();
+                String email = claims.getSubject();
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(email, null, List.of());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
+            }
+        }
+        chain.doFilter(request, response);
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\config\SecurityConfig.java
+======================================================================
+package com.aibert.dosw.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+import com.aibert.dosw.config.JwtAuthFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+@Configuration
+public class SecurityConfig {
+
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\config\SwaggerConfig.java
+======================================================================
+package com.aibert.dosw.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .info(new Info().title("Profile Service API").version("1.0.0"))
+                .addSecurityItem(new SecurityRequirement().addList("Bearer"))
+                .components(new Components().addSecuritySchemes("Bearer",
+                        new SecurityScheme()
+                                .name("Bearer")
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\exceptions\EmailAlreadyRegisteredException.java
+======================================================================
+package com.aibert.dosw.domain.exceptions;
+
+public class EmailAlreadyRegisteredException extends RuntimeException {
+    public EmailAlreadyRegisteredException() {
+        super("Este correo ya tiene una cuenta asociada");
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\exceptions\InvalidPasswordException.java
+======================================================================
+package com.aibert.dosw.domain.exceptions;
+
+public class InvalidPasswordException extends RuntimeException {
+    public InvalidPasswordException() {
+        super("Contraseña actual incorrecta");
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\exceptions\InvalidTokenException.java
+======================================================================
+package com.aibert.dosw.domain.exceptions;
+
+public class InvalidTokenException extends RuntimeException {
+    public InvalidTokenException() {
+        super("El enlace de verificación es inválido o ha caducado");
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\exceptions\UserNotFoundException.java
+======================================================================
+package com.aibert.dosw.domain.exceptions;
+
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException() {
+        super("Usuario no encontrado");
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\AcademicGoal.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+public enum AcademicGoal {
+    APROBAR_TODO,
+    MEJORAR_PROMEDIO,
+    EQUILIBRIO
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\Availability.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+public enum Availability {
+    MANANA,
+    TARDE,
+    NOCHE
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\Career.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+public enum Career {
+    INGENIERIA_SISTEMAS,
+    INGENIERIA_CIVIL,
+    INGENIERIA_ELECTRICA,
+    INGENIERIA_ELECTRONICA,
+    INGENIERIA_INDUSTRIAL,
+    INGENIERIA_MECANICA,
+    INGENIERIA_BIOMEDICA,
+    MATEMATICAS,
+    FISICA,
+    ADMINISTRACION_EMPRESAS
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\EmailVerificationToken.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@Builder
+public class EmailVerificationToken {
+    private Long id;
+    private String token;
+    private UUID userId;
+    private LocalDateTime expiresAt;
+    private boolean used;
+    private Integer failedAttempts;
+    private LocalDateTime blockedUntil;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\PasswordResetToken.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@Builder
+public class PasswordResetToken {
+    private Long id;
+    private String token;
+    private UUID userId;
+    private LocalDateTime expiresAt;
+    private boolean used;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\Role.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+public enum Role {
+    ESTUDIANTE, ADMIN
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\User.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@Builder
+public class User {
+    private UUID id;
+    private String fullName;
+    private String email;
+    private String password;
+    private boolean verified;
+    private Role role;
+    private UserStatus status;
+    private Career career;
+    private Career doubleDegreeCareer;
+    private Integer currentSemester;
+    private Integer weeklyHours;
+    private Integer dailyStudyHours;
+    private Double currentGpa;
+    private Integer currentSubjects;
+    private AcademicGoal academicGoal;
+    private boolean currentlyWorking;
+    private Availability availability;
+    private boolean profileComplete;
+    private String profilePhotoUrl;
+    private Integer passwordVersion;
+    private LocalDateTime createdAt;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\model\user\UserStatus.java
+======================================================================
+package com.aibert.dosw.domain.model.user;
+
+public enum UserStatus {
+    ACTIVO, INACTIVO
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\in\AcademicProfileUseCase.java
+======================================================================
+package com.aibert.dosw.domain.ports.in;
+
+import com.aibert.dosw.application.dto.request.AcademicProfileDTO;
+import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
+
+import java.util.UUID;
+
+public interface AcademicProfileUseCase {
+    AcademicProfileResponseDTO saveAcademicProfile(UUID userId, AcademicProfileDTO dto);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\in\AdminUserUseCase.java
+======================================================================
+package com.aibert.dosw.domain.ports.in;
+
+import com.aibert.dosw.application.dto.request.AdminEditUserRequestDTO;
+import com.aibert.dosw.application.dto.request.ChangeRoleRequestDTO;
+import com.aibert.dosw.application.dto.response.UserSummaryDTO;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface AdminUserUseCase {
+    List<UserSummaryDTO> listUsers(String name, String email, String status, String role);
+    UserSummaryDTO getUserDetail(UUID userId);
+    UserSummaryDTO editUser(UUID adminId, UUID userId, AdminEditUserRequestDTO request);
+    UserSummaryDTO updateUserStatus(UUID adminId, UUID userId, String newStatus);
+    void deleteUser(UUID adminId, UUID userId);
+    UserSummaryDTO changeRole(UUID adminId, UUID userId, ChangeRoleRequestDTO request);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\in\DeleteAccountUseCase.java
+======================================================================
+package com.aibert.dosw.domain.ports.in;
+
+import java.util.UUID;
+
+public interface DeleteAccountUseCase {
+    void deleteAccount(UUID userId, String currentPassword);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\in\PasswordResetUseCase.java
+======================================================================
+package com.aibert.dosw.domain.ports.in;
+
+import com.aibert.dosw.application.dto.response.PasswordResetResponseDTO;
+
+public interface PasswordResetUseCase {
+    PasswordResetResponseDTO requestPasswordReset(String email);
+    void resetPassword(String token, String newPassword, String confirmPassword);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\in\RegisterUseCase.java
+======================================================================
+package com.aibert.dosw.domain.ports.in;
+
+import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
+import com.aibert.dosw.application.dto.response.OtpVerificationResponseDTO;
+import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
+import java.util.UUID;
+
+public interface RegisterUseCase {
+    RegisterResponseDTO register(RegisterRequestDTO request);
+    void verifyEmail(String token);
+    void resendVerificationEmail(String email);
+    OtpVerificationResponseDTO verifyOtp(UUID userId, String otp);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\in\UpdateProfileUseCase.java
+======================================================================
+package com.aibert.dosw.domain.ports.in;
+
+import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
+import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
+
+public interface UpdateProfileUseCase {
+    void updateProfile(UUID userId, UpdateProfileDTO dto, MultipartFile photo);
+    void changePassword(UUID userId, PasswordChangeDTO dto);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\out\EmailServicePort.java
+======================================================================
+package com.aibert.dosw.domain.ports.out;
+
+public interface EmailServicePort {
+    void sendVerificationEmail(String toEmail, String otp);
+    void sendRecoveryEmail(String toEmail, String recoveryLink);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\out\PasswordResetTokenPort.java
+======================================================================
+package com.aibert.dosw.domain.ports.out;
+
+import com.aibert.dosw.domain.model.user.PasswordResetToken;
+
+import java.util.Optional;
+
+public interface PasswordResetTokenPort {
+    PasswordResetToken save(PasswordResetToken token);
+    Optional<PasswordResetToken> findByToken(String token);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\out\TokenRepositoryPort.java
+======================================================================
+package com.aibert.dosw.domain.ports.out;
+
+import com.aibert.dosw.domain.model.user.EmailVerificationToken;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface TokenRepositoryPort {
+    EmailVerificationToken save(EmailVerificationToken token);
+    Optional<EmailVerificationToken> findByToken(String token);
+    Optional<EmailVerificationToken> findLatestByUserId(UUID userId);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\domain\ports\out\UserRepositoryPort.java
+======================================================================
+package com.aibert.dosw.domain.ports.out;
+
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.model.user.UserStatus;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface UserRepositoryPort {
+    Optional<User> findByEmail(String email);
+    Optional<User> findById(UUID id);
+    User save(User user);
+    boolean existsByEmail(String email);
+    boolean existsByEmailAndIdNot(String email, UUID id);
+    List<User> findAll();
+    List<User> findByFilters(String name, String email, UserStatus status, String role);
+    void deleteById(UUID id);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\entrypoints\advice\GlobalExceptionHandler.java
+======================================================================
+package com.aibert.dosw.entrypoints.advice;
+
+import com.aibert.dosw.domain.exceptions.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .findFirst().orElse("Datos inválidos");
+        return ResponseEntity.badRequest().body(Map.of("error", message));
+    }
+
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    public ResponseEntity<Map<String, String>> handleEmailExists(EmailAlreadyRegisteredException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidToken(InvalidTokenException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPassword(InvalidPasswordException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\entrypoints\rest\controller\AdminController.java
+======================================================================
+package com.aibert.dosw.entrypoints.rest.controller;
+
+import com.aibert.dosw.application.dto.request.AdminEditUserRequestDTO;
+import com.aibert.dosw.application.dto.request.ChangeRoleRequestDTO;
+import com.aibert.dosw.application.dto.response.UserSummaryDTO;
+import com.aibert.dosw.domain.ports.in.AdminUserUseCase;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/admin/users")
+@RequiredArgsConstructor
+public class AdminController {
+
+    private final AdminUserUseCase adminUserUseCase;
+
+    @GetMapping
+    public ResponseEntity<List<UserSummaryDTO>> listUsers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String role) {
+        return ResponseEntity.ok(adminUserUseCase.listUsers(name, email, status, role));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserSummaryDTO> getUserDetail(@PathVariable UUID userId) {
+        return ResponseEntity.ok(adminUserUseCase.getUserDetail(userId));
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserSummaryDTO> editUser(
+            @RequestHeader("X-Admin-Id") UUID adminId,
+            @PathVariable UUID userId,
+            @Valid @RequestBody AdminEditUserRequestDTO request) {
+        return ResponseEntity.ok(adminUserUseCase.editUser(adminId, userId, request));
+    }
+
+    @PutMapping("/{userId}/status")
+    public ResponseEntity<UserSummaryDTO> updateStatus(
+            @RequestHeader("X-Admin-Id") UUID adminId,
+            @PathVariable UUID userId,
+            @RequestParam String status) {
+        return ResponseEntity.ok(adminUserUseCase.updateUserStatus(adminId, userId, status));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Map<String, String>> deleteUser(
+            @RequestHeader("X-Admin-Id") UUID adminId,
+            @PathVariable UUID userId) {
+        adminUserUseCase.deleteUser(adminId, userId);
+        return ResponseEntity.ok(Map.of("message", "Usuario eliminado exitosamente"));
+    }
+
+    @PutMapping("/{userId}/role")
+    public ResponseEntity<UserSummaryDTO> changeRole(
+            @RequestHeader("X-Admin-Id") UUID adminId,
+            @PathVariable UUID userId,
+            @Valid @RequestBody ChangeRoleRequestDTO request) {
+        return ResponseEntity.ok(adminUserUseCase.changeRole(adminId, userId, request));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\entrypoints\rest\controller\AuthController.java
+======================================================================
+package com.aibert.dosw.entrypoints.rest.controller;
+
+import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
+import com.aibert.dosw.application.dto.response.OtpVerificationResponseDTO;
+import com.aibert.dosw.application.dto.response.PasswordResetResponseDTO;
+import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
+import com.aibert.dosw.domain.ports.in.PasswordResetUseCase;
+import com.aibert.dosw.domain.ports.in.RegisterUseCase;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final RegisterUseCase registerUseCase;
+    private final PasswordResetUseCase passwordResetUseCase;
+
+    @PostMapping("/register")
+    public ResponseEntity<RegisterResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerUseCase.register(request));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<OtpVerificationResponseDTO> verifyOtp(
+            @RequestParam UUID userId,
+            @RequestParam String otp) {
+        return ResponseEntity.ok(registerUseCase.verifyOtp(userId, otp));
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<String> resend(@RequestParam String email) {
+        registerUseCase.resendVerificationEmail(email);
+        return ResponseEntity.ok("Código OTP reenviado al correo institucional.");
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<PasswordResetResponseDTO> forgotPassword(@RequestParam String email) {
+        return ResponseEntity.ok(passwordResetUseCase.requestPasswordReset(email));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @RequestParam String token,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword) {
+        passwordResetUseCase.resetPassword(token, newPassword, confirmPassword);
+        return ResponseEntity.ok("Contraseña restablecida exitosamente.");
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\entrypoints\rest\controller\ProfileController.java
+======================================================================
+package com.aibert.dosw.entrypoints.rest.controller;
+
+import com.aibert.dosw.application.dto.request.AcademicProfileDTO;
+import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
+import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
+import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
+import com.aibert.dosw.domain.ports.in.AcademicProfileUseCase;
+import com.aibert.dosw.domain.ports.in.DeleteAccountUseCase;
+import com.aibert.dosw.domain.ports.in.UpdateProfileUseCase;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/profile")
+@RequiredArgsConstructor
+public class ProfileController {
+
+    private final AcademicProfileUseCase academicProfileUseCase;
+    private final UpdateProfileUseCase updateProfileUseCase;
+    private final DeleteAccountUseCase deleteAccountUseCase;
+
+    @PutMapping("/{userId}/academic")
+    public ResponseEntity<AcademicProfileResponseDTO> saveAcademicProfile(
+            @PathVariable UUID userId,
+            @Valid @RequestBody AcademicProfileDTO dto) {
+        return ResponseEntity.ok(academicProfileUseCase.saveAcademicProfile(userId, dto));
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Map<String, String>> updateProfile(
+            @PathVariable UUID userId,
+            @Valid @RequestPart(value = "data") UpdateProfileDTO dto,
+            @RequestPart(value = "photo", required = false) MultipartFile photo) {
+        updateProfileUseCase.updateProfile(userId, dto, photo);
+        return ResponseEntity.ok(Map.of("message", "Perfil actualizado exitosamente."));
+    }
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<Map<String, String>> changePassword(
+            @PathVariable UUID userId,
+            @Valid @RequestBody PasswordChangeDTO dto) {
+        updateProfileUseCase.changePassword(userId, dto);
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada. Todas las sesiones han sido cerradas."));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Map<String, Object>> deleteAccount(
+            @PathVariable UUID userId,
+            @RequestParam String currentPassword) {
+        deleteAccountUseCase.deleteAccount(userId, currentPassword);
+        return ResponseEntity.ok(Map.of("accountDeleted", true, "sessionInvalidated", true, "redirectLogin", true));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\adapter\PasswordResetTokenAdapter.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.adapter;
+
+import com.aibert.dosw.domain.model.user.PasswordResetToken;
+import com.aibert.dosw.domain.ports.out.PasswordResetTokenPort;
+import com.aibert.dosw.infrastructure.adapters.persistence.mapper.PasswordResetTokenMapper;
+import com.aibert.dosw.infrastructure.adapters.persistence.repository.PasswordResetTokenJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+
+@Component
+@RequiredArgsConstructor
+public class PasswordResetTokenAdapter implements PasswordResetTokenPort {
+
+    private final PasswordResetTokenJpaRepository jpaRepository;
+    private final PasswordResetTokenMapper mapper;
+
+    @Override
+    public PasswordResetToken save(PasswordResetToken token) {
+        return mapper.toDomain(jpaRepository.save(mapper.toEntity(token)));
+    }
+
+    @Override
+    public Optional<PasswordResetToken> findByToken(String token) {
+        return jpaRepository.findByToken(token).map(mapper::toDomain);
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\adapter\TokenRepositoryAdapter.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.adapter;
+
+import com.aibert.dosw.domain.model.user.EmailVerificationToken;
+import com.aibert.dosw.domain.ports.out.TokenRepositoryPort;
+import com.aibert.dosw.infrastructure.adapters.persistence.mapper.TokenPersistenceMapper;
+import com.aibert.dosw.infrastructure.adapters.persistence.repository.TokenJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Component
+@RequiredArgsConstructor
+public class TokenRepositoryAdapter implements TokenRepositoryPort {
+
+    private final TokenJpaRepository jpaRepository;
+    private final TokenPersistenceMapper mapper;
+
+    @Override
+    public EmailVerificationToken save(EmailVerificationToken token) {
+        return mapper.toDomain(jpaRepository.save(mapper.toEntity(token)));
+    }
+
+    @Override
+    public Optional<EmailVerificationToken> findByToken(String token) {
+        return jpaRepository.findByToken(token).map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<EmailVerificationToken> findLatestByUserId(UUID userId) {
+        return jpaRepository.findLatestByUserId(userId).map(mapper::toDomain);
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\adapter\UserRepositoryAdapter.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.adapter;
+
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.domain.model.user.UserStatus;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import com.aibert.dosw.infrastructure.adapters.persistence.mapper.UserPersistenceMapper;
+import com.aibert.dosw.infrastructure.adapters.persistence.repository.UserJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Component
+@RequiredArgsConstructor
+public class UserRepositoryAdapter implements UserRepositoryPort {
+
+    private final UserJpaRepository jpaRepository;
+    private final UserPersistenceMapper mapper;
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jpaRepository.findByEmail(email).map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<User> findById(UUID id) {
+        return jpaRepository.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
+    public User save(User user) {
+        return mapper.toDomain(jpaRepository.save(mapper.toEntity(user)));
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return jpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByEmailAndIdNot(String email, UUID id) {
+        return jpaRepository.existsByEmailAndIdNot(email, id);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return jpaRepository.findAll().stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> findByFilters(String name, String email, UserStatus status, String role) {
+        return jpaRepository.findByFilters(name, email, status, role)
+                .stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\entity\EmailVerificationTokenEntity.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "email_verification_tokens")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+public class EmailVerificationTokenEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String token;
+
+    @Column(nullable = false)
+    private UUID userId;
+
+    @Column(nullable = false)
+    private LocalDateTime expiresAt;
+
+    @Column(nullable = false)
+    private boolean used;
+
+    @Column
+    private Integer failedAttempts;
+
+    @Column
+    private LocalDateTime blockedUntil;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\entity\PasswordResetTokenEntity.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "password_reset_tokens")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+public class PasswordResetTokenEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String token;
+
+    @Column(nullable = false)
+    private UUID userId;
+
+    @Column(nullable = false)
+    private LocalDateTime expiresAt;
+
+    @Column(nullable = false)
+    private boolean used;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\entity\UserEntity.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.entity;
+
+import com.aibert.dosw.domain.model.user.*;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "users")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+public class UserEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(nullable = false)
+    private String fullName;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private boolean verified;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private Career career;
+
+    @Enumerated(EnumType.STRING)
+    private Career doubleDegreeCareer;
+
+    private Integer currentSemester;
+    private Integer weeklyHours;
+    private Integer dailyStudyHours;
+    private Double currentGpa;
+    private Integer currentSubjects;
+
+    @Enumerated(EnumType.STRING)
+    private AcademicGoal academicGoal;
+
+    private boolean currentlyWorking;
+
+    @Enumerated(EnumType.STRING)
+    private Availability availability;
+
+    private boolean profileComplete;
+    private String profilePhotoUrl;
+    private Integer passwordVersion;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\mapper\PasswordResetTokenMapper.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.mapper;
+
+import com.aibert.dosw.domain.model.user.PasswordResetToken;
+import com.aibert.dosw.infrastructure.adapters.persistence.entity.PasswordResetTokenEntity;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface PasswordResetTokenMapper {
+    PasswordResetToken toDomain(PasswordResetTokenEntity entity);
+    PasswordResetTokenEntity toEntity(PasswordResetToken token);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\mapper\TokenPersistenceMapper.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.mapper;
+
+import com.aibert.dosw.domain.model.user.EmailVerificationToken;
+import com.aibert.dosw.infrastructure.adapters.persistence.entity.EmailVerificationTokenEntity;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface TokenPersistenceMapper {
+    EmailVerificationToken toDomain(EmailVerificationTokenEntity entity);
+    EmailVerificationTokenEntity toEntity(EmailVerificationToken token);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\mapper\UserPersistenceMapper.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.mapper;
+
+import com.aibert.dosw.domain.model.user.User;
+import com.aibert.dosw.infrastructure.adapters.persistence.entity.UserEntity;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface UserPersistenceMapper {
+    User toDomain(UserEntity entity);
+    UserEntity toEntity(User user);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\repository\PasswordResetTokenJpaRepository.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.repository;
+
+import com.aibert.dosw.infrastructure.adapters.persistence.entity.PasswordResetTokenEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface PasswordResetTokenJpaRepository extends JpaRepository<PasswordResetTokenEntity, Long> {
+    Optional<PasswordResetTokenEntity> findByToken(String token);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\repository\TokenJpaRepository.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.repository;
+
+import com.aibert.dosw.infrastructure.adapters.persistence.entity.EmailVerificationTokenEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface TokenJpaRepository extends JpaRepository<EmailVerificationTokenEntity, Long> {
+    Optional<EmailVerificationTokenEntity> findByToken(String token);
+
+    @Query("SELECT t FROM EmailVerificationTokenEntity t WHERE t.userId = :userId ORDER BY t.id DESC LIMIT 1")
+    Optional<EmailVerificationTokenEntity> findLatestByUserId(@Param("userId") UUID userId);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\adapters\persistence\repository\UserJpaRepository.java
+======================================================================
+package com.aibert.dosw.infrastructure.adapters.persistence.repository;
+
+import com.aibert.dosw.domain.model.user.UserStatus;
+import com.aibert.dosw.infrastructure.adapters.persistence.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface UserJpaRepository extends JpaRepository<UserEntity, UUID> {
+    Optional<UserEntity> findByEmail(String email);
+    boolean existsByEmail(String email);
+    boolean existsByEmailAndIdNot(String email, UUID id);
+
+    @Query("SELECT u FROM UserEntity u WHERE " +
+           "(:name IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+           "(:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+           "(:status IS NULL OR u.status = :status) AND " +
+           "(:role IS NULL OR CAST(u.role AS string) = :role)")
+    List<UserEntity> findByFilters(@Param("name") String name,
+                                   @Param("email") String email,
+                                   @Param("status") UserStatus status,
+                                   @Param("role") String role);
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\main\java\com\aibert\dosw\infrastructure\external\email\SmtpEmailService.java
+======================================================================
+package com.aibert.dosw.infrastructure.external.email;
+
+import com.aibert.dosw.domain.ports.out.EmailServicePort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class SmtpEmailService implements EmailServicePort {
+
+    private final JavaMailSender mailSender;
+
+    @Override
+    public void sendVerificationEmail(String toEmail, String verificationLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Verifica tu cuenta en EciPlanner");
+        message.setText("Tu código de verificación es:\n\n" + verificationLink + "\n\nEste código caduca en 5 minutos y solo puede usarse una vez.");
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendRecoveryEmail(String toEmail, String recoveryLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Recuperación de contraseña - EciPlanner");
+        message.setText("Haz clic en el siguiente enlace para restablecer tu contraseña (caduca en 2 minutos):\n\n" + recoveryLink + "\n\nSi no solicitaste esto, ignora este correo.");
+        mailSender.send(message);
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\com\aibert\dosw\application\service\AcademicProfileServiceTest.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.AcademicProfileDTO;
+import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.*;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class AcademicProfileServiceTest {
+
+    @Mock private UserRepositoryPort userRepository;
+    @InjectMocks private AcademicProfileService academicProfileService;
+
+    private final UUID userId = UUID.randomUUID();
+
+    private User buildUser() {
+        return User.builder()
+                .id(userId).fullName("Test User")
+                .email("test@mail.escuelaing.edu.co").password("hashed")
+                .verified(true).role(Role.ESTUDIANTE).status(UserStatus.ACTIVO)
+                .career(Career.INGENIERIA_SISTEMAS).currentSemester(3)
+                .profileComplete(false).createdAt(LocalDateTime.now()).build();
+    }
+
+    private AcademicProfileDTO buildDto() {
+        AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
+        when(dto.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
+        when(dto.getDoubleDegreeCareer()).thenReturn(null);
+        when(dto.getCurrentSemester()).thenReturn(3);
+        when(dto.getWeeklyHours()).thenReturn(20);
+        when(dto.getDailyStudyHours()).thenReturn(4);
+        when(dto.getCurrentGpa()).thenReturn(3.8);
+        when(dto.getCurrentSubjects()).thenReturn(5);
+        when(dto.getAcademicGoal()).thenReturn(AcademicGoal.MEJORAR_PROMEDIO);
+        when(dto.getCurrentlyWorking()).thenReturn(false);
+        when(dto.getAvailability()).thenReturn(Availability.TARDE);
+        return dto;
+    }
+
+    @Test
+    void saveAcademicProfile_exitoso_retornaDatos() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, buildDto());
+
+        assertNotNull(response);
+        assertEquals(20, response.getWeeklyHours());
+        assertEquals(3.8, response.getCurrentGpa());
+        assertEquals(4, response.getDailyStudyHours());
+        assertEquals(Availability.TARDE, response.getAvailability());
+        assertTrue(response.isProfileComplete());
+    }
+
+    @Test
+    void saveAcademicProfile_conDobleCarrera_retornaDatos() {
+        AcademicProfileDTO dto = buildDto();
+        when(dto.getDoubleDegreeCareer()).thenReturn(Career.MATEMATICAS);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, dto);
+        assertEquals("MATEMATICAS", response.getDoubleDegreeCareer());
+    }
+
+    @Test
+    void saveAcademicProfile_conObjetivoEquilibrio_retornaDatos() {
+        AcademicProfileDTO dto = buildDto();
+        when(dto.getAcademicGoal()).thenReturn(AcademicGoal.EQUILIBRIO);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, dto);
+        assertEquals(AcademicGoal.EQUILIBRIO, response.getAcademicGoal());
+    }
+
+    @Test
+    void saveAcademicProfile_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> academicProfileService.saveAcademicProfile(userId, mock(AcademicProfileDTO.class)));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\com\aibert\dosw\application\service\AdminUserServiceTest.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.AdminEditUserRequestDTO;
+import com.aibert.dosw.application.dto.request.ChangeRoleRequestDTO;
+import com.aibert.dosw.application.dto.response.UserSummaryDTO;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.*;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class AdminUserServiceTest {
+
+    @Mock private UserRepositoryPort userRepository;
+    @InjectMocks private AdminUserService adminUserService;
+
+    private final UUID adminId = UUID.randomUUID();
+    private final UUID userId = UUID.randomUUID();
+
+    private User buildUser(UUID id) {
+        return User.builder()
+                .id(id)
+                .fullName("Test User")
+                .email("test@mail.escuelaing.edu.co")
+                .password("hashed")
+                .verified(true)
+                .role(Role.ESTUDIANTE)
+                .status(UserStatus.ACTIVO)
+                .profileComplete(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Test
+    void getUserDetail_exitoso_retornaUsuario() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        UserSummaryDTO result = adminUserService.getUserDetail(userId);
+        assertNotNull(result);
+        assertEquals(userId, result.getId());
+    }
+
+    @Test
+    void getUserDetail_noExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> adminUserService.getUserDetail(userId));
+    }
+
+    @Test
+    void updateUserStatus_propiasCuenta_lanzaException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.updateUserStatus(adminId, adminId, "INACTIVO"));
+    }
+
+    @Test
+    void deleteUser_propiasCuenta_lanzaException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.deleteUser(adminId, adminId));
+    }
+
+    @Test
+    void changeRole_propioRol_lanzaException() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.changeRole(adminId, adminId, dto));
+    }
+
+    @Test
+    void listUsers_retornaLista() {
+        when(userRepository.findByFilters(any(), any(), any(), any())).thenReturn(List.of(buildUser(userId)));
+        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, null, null);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void listUsers_conFiltroStatus_retornaLista() {
+        when(userRepository.findByFilters(any(), any(), any(), any())).thenReturn(List.of(buildUser(userId)));
+        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, "ACTIVO", null);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void listUsers_conFiltroRol_retornaLista() {
+        when(userRepository.findByFilters(any(), any(), any(), any())).thenReturn(List.of(buildUser(userId)));
+        List<UserSummaryDTO> result = adminUserService.listUsers(null, null, null, "ESTUDIANTE");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void editUser_exitoso_actualizaDatos() {
+        AdminEditUserRequestDTO dto = mock(AdminEditUserRequestDTO.class);
+        when(dto.getFullName()).thenReturn("Nuevo Nombre");
+        when(dto.getEmail()).thenReturn("nuevo@mail.escuelaing.edu.co");
+        when(dto.getRole()).thenReturn(Role.ESTUDIANTE);
+        when(dto.getStatus()).thenReturn(UserStatus.ACTIVO);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.existsByEmailAndIdNot(any(), any())).thenReturn(false);
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        UserSummaryDTO result = adminUserService.editUser(adminId, userId, dto);
+        assertNotNull(result);
+    }
+
+    @Test
+    void editUser_correoYaExiste_lanzaException() {
+        AdminEditUserRequestDTO dto = mock(AdminEditUserRequestDTO.class);
+        when(dto.getEmail()).thenReturn("otro@mail.escuelaing.edu.co");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.existsByEmailAndIdNot(any(), any())).thenReturn(true);
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.editUser(adminId, userId, dto));
+    }
+
+    @Test
+    void changeRole_yaEsAdmin_lanzaException() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(dto.getNewRole()).thenReturn(Role.ADMIN);
+        User adminUser = User.builder().id(userId).fullName("Test")
+                .email("test@mail.escuelaing.edu.co").password("hashed")
+                .verified(true).role(Role.ADMIN).status(UserStatus.ACTIVO)
+                .profileComplete(true).createdAt(LocalDateTime.now()).build();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(adminUser));
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.changeRole(adminId, userId, dto));
+    }
+
+    @Test
+    void changeRole_yaEsEstudiante_lanzaException() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(dto.getNewRole()).thenReturn(Role.ESTUDIANTE);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        assertThrows(IllegalArgumentException.class,
+                () -> adminUserService.changeRole(adminId, userId, dto));
+    }
+
+    @Test
+    void updateUserStatus_exitoso_actualizaEstado() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        UserSummaryDTO result = adminUserService.updateUserStatus(adminId, userId, "INACTIVO");
+        assertNotNull(result);
+    }
+
+    @Test
+    void updateUserStatus_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> adminUserService.updateUserStatus(adminId, userId, "INACTIVO"));
+    }
+
+    @Test
+    void deleteUser_exitoso_eliminaUsuario() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        doNothing().when(userRepository).deleteById(userId);
+        assertDoesNotThrow(() -> adminUserService.deleteUser(adminId, userId));
+        verify(userRepository).deleteById(userId);
+    }
+
+    @Test
+    void deleteUser_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> adminUserService.deleteUser(adminId, userId));
+    }
+
+    @Test
+    void changeRole_exitoso_actualizaRol() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(dto.getNewRole()).thenReturn(Role.ADMIN);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        UserSummaryDTO result = adminUserService.changeRole(adminId, userId, dto);
+        assertNotNull(result);
+    }
+
+    @Test
+    void changeRole_usuarioNoExiste_lanzaException() {
+        ChangeRoleRequestDTO dto = mock(ChangeRoleRequestDTO.class);
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> adminUserService.changeRole(adminId, userId, dto));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\com\aibert\dosw\application\service\DeleteAccountServiceTest.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.domain.exceptions.InvalidPasswordException;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.*;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class DeleteAccountServiceTest {
+
+    @Mock private UserRepositoryPort userRepository;
+    @Mock private BCryptPasswordEncoder passwordEncoder;
+    @InjectMocks private DeleteAccountService deleteAccountService;
+
+    private final UUID userId = UUID.randomUUID();
+
+    private User buildUser() {
+        return User.builder()
+                .id(userId).fullName("Test").email("test@mail.escuelaing.edu.co")
+                .password("hashedPassword").verified(true).role(Role.ESTUDIANTE)
+                .status(UserStatus.ACTIVO).profileComplete(true)
+                .createdAt(LocalDateTime.now()).build();
+    }
+
+    @Test
+    void deleteAccount_contrasenaCorrecta_eliminaCuenta() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(passwordEncoder.matches("MiPass123", "hashedPassword")).thenReturn(true);
+        doNothing().when(userRepository).deleteById(userId);
+
+        assertDoesNotThrow(() -> deleteAccountService.deleteAccount(userId, "MiPass123"));
+        verify(userRepository).deleteById(userId);
+    }
+
+    @Test
+    void deleteAccount_contrasenaIncorrecta_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(passwordEncoder.matches("wrongPass", "hashedPassword")).thenReturn(false);
+
+        assertThrows(InvalidPasswordException.class,
+                () -> deleteAccountService.deleteAccount(userId, "wrongPass"));
+        verify(userRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void deleteAccount_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> deleteAccountService.deleteAccount(userId, "MiPass123"));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\com\aibert\dosw\application\service\PasswordResetServiceTest.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.response.PasswordResetResponseDTO;
+import com.aibert.dosw.domain.exceptions.InvalidTokenException;
+import com.aibert.dosw.domain.model.user.*;
+import com.aibert.dosw.domain.ports.out.EmailServicePort;
+import com.aibert.dosw.domain.ports.out.PasswordResetTokenPort;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class PasswordResetServiceTest {
+
+    @Mock private UserRepositoryPort userRepository;
+    @Mock private PasswordResetTokenPort tokenPort;
+    @Mock private EmailServicePort emailService;
+    @Mock private BCryptPasswordEncoder passwordEncoder;
+
+    @InjectMocks private PasswordResetService passwordResetService;
+
+    private final UUID userId = UUID.randomUUID();
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(passwordResetService, "baseUrl", "http://localhost:8081");
+    }
+
+    private User buildUser() {
+        return User.builder()
+                .id(userId).fullName("Test").email("test@mail.escuelaing.edu.co")
+                .password("hashed").verified(true).role(Role.ESTUDIANTE)
+                .status(UserStatus.ACTIVO).profileComplete(false)
+                .createdAt(LocalDateTime.now()).build();
+    }
+
+    private PasswordResetToken buildToken(boolean used, LocalDateTime expiresAt) {
+        return PasswordResetToken.builder()
+                .id(1L).token("reset-token").userId(userId)
+                .expiresAt(expiresAt).used(used).build();
+    }
+
+    @Test
+    void requestPasswordReset_correoExiste_enviaCorreoYRetornaTrue() {
+        when(userRepository.findByEmail("test@mail.escuelaing.edu.co"))
+                .thenReturn(Optional.of(buildUser()));
+        when(tokenPort.save(any())).thenAnswer(i -> i.getArgument(0));
+        doNothing().when(emailService).sendRecoveryEmail(any(), any());
+
+        PasswordResetResponseDTO response = passwordResetService
+                .requestPasswordReset("test@mail.escuelaing.edu.co");
+
+        assertTrue(response.isRecoveryStatus());
+        assertEquals(2, response.getExpirationTime());
+        verify(emailService).sendRecoveryEmail(any(), any());
+    }
+
+    @Test
+    void requestPasswordReset_correoNoExiste_retornaTrueSinEnviarCorreo() {
+        // RN-04: no revelar si el correo existe
+        when(userRepository.findByEmail("noexiste@mail.escuelaing.edu.co"))
+                .thenReturn(Optional.empty());
+
+        PasswordResetResponseDTO response = passwordResetService
+                .requestPasswordReset("noexiste@mail.escuelaing.edu.co");
+
+        assertTrue(response.isRecoveryStatus());
+        verify(emailService, never()).sendRecoveryEmail(any(), any());
+    }
+
+    @Test
+    void resetPassword_tokenValido_actualizaContrasena() {
+        when(tokenPort.findByToken("reset-token"))
+                .thenReturn(Optional.of(buildToken(false, LocalDateTime.now().plusMinutes(2))));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(passwordEncoder.encode("NewPass123")).thenReturn("newHashed");
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(tokenPort.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        assertDoesNotThrow(() -> passwordResetService
+                .resetPassword("reset-token", "NewPass123", "NewPass123"));
+        verify(userRepository).save(any());
+    }
+
+    @Test
+    void resetPassword_contrasenasNoCoinciden_lanzaException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                passwordResetService.resetPassword("reset-token", "Pass1234", "Diferente"));
+    }
+
+    @Test
+    void resetPassword_tokenNoExiste_lanzaInvalidToken() {
+        when(tokenPort.findByToken("bad-token")).thenReturn(Optional.empty());
+        assertThrows(InvalidTokenException.class, () ->
+                passwordResetService.resetPassword("bad-token", "Pass1234", "Pass1234"));
+    }
+
+    @Test
+    void resetPassword_tokenUsado_lanzaInvalidToken() {
+        when(tokenPort.findByToken("reset-token"))
+                .thenReturn(Optional.of(buildToken(true, LocalDateTime.now().plusMinutes(2))));
+        assertThrows(InvalidTokenException.class, () ->
+                passwordResetService.resetPassword("reset-token", "Pass1234", "Pass1234"));
+    }
+
+    @Test
+    void resetPassword_tokenExpirado_lanzaInvalidToken() {
+        when(tokenPort.findByToken("reset-token"))
+                .thenReturn(Optional.of(buildToken(false, LocalDateTime.now().minusMinutes(1))));
+        assertThrows(InvalidTokenException.class, () ->
+                passwordResetService.resetPassword("reset-token", "Pass1234", "Pass1234"));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\com\aibert\dosw\application\service\RegisterServiceTest.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.RegisterRequestDTO;
+import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
+import com.aibert.dosw.domain.exceptions.EmailAlreadyRegisteredException;
+import com.aibert.dosw.domain.exceptions.InvalidTokenException;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.*;
+import com.aibert.dosw.domain.ports.out.EmailServicePort;
+import com.aibert.dosw.domain.ports.out.TokenRepositoryPort;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class RegisterServiceTest {
+
+    @Mock private UserRepositoryPort userRepository;
+    @Mock private TokenRepositoryPort tokenRepository;
+    @Mock private EmailServicePort emailService;
+    @Mock private BCryptPasswordEncoder passwordEncoder;
+
+    @InjectMocks private RegisterService registerService;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(registerService, "baseUrl", "http://localhost:8081");
+    }
+
+    private User buildUser(UUID id) {
+        return User.builder()
+                .id(id)
+                .fullName("Test")
+                .email("test@mail.escuelaing.edu.co")
+                .password("hashed")
+                .verified(false)
+                .role(Role.ESTUDIANTE)
+                .status(UserStatus.ACTIVO)
+                .profileComplete(false)
+                .build();
+    }
+
+    @Test
+    void register_exitoso_retornaIdYRol() {
+        RegisterRequestDTO request = mock(RegisterRequestDTO.class);
+        when(request.getEmail()).thenReturn("nuevo@mail.escuelaing.edu.co");
+        when(request.getPassword()).thenReturn("Pass1234");
+        when(request.getConfirmPassword()).thenReturn("Pass1234");
+        when(request.getFullName()).thenReturn("Nuevo Usuario");
+        when(request.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
+
+        when(userRepository.existsByEmail(any())).thenReturn(false);
+        when(passwordEncoder.encode(any())).thenReturn("hashed");
+        when(userRepository.save(any())).thenReturn(User.builder()
+                .id(UUID.randomUUID())
+                .email("nuevo@mail.escuelaing.edu.co")
+                .role(Role.ESTUDIANTE)
+                .status(UserStatus.ACTIVO)
+                .build());
+        when(tokenRepository.save(any())).thenReturn(null);
+        doNothing().when(emailService).sendVerificationEmail(any(), any());
+
+        RegisterResponseDTO response = registerService.register(request);
+
+        assertNotNull(response.getId());
+        assertEquals("ESTUDIANTE", response.getRole());
+        assertNotNull(response.getMessage());
+    }
+
+    @Test
+    void register_correoYaExiste_lanzaEmailAlreadyRegistered() {
+        RegisterRequestDTO request = mock(RegisterRequestDTO.class);
+        when(request.getEmail()).thenReturn("existente@mail.escuelaing.edu.co");
+        when(request.getPassword()).thenReturn("Pass1234");
+        when(request.getConfirmPassword()).thenReturn("Pass1234");
+        when(userRepository.existsByEmail(any())).thenReturn(true);
+
+        assertThrows(EmailAlreadyRegisteredException.class, () -> registerService.register(request));
+    }
+
+    @Test
+    void register_contrasenasNoCoinciden_lanzaIllegalArgument() {
+        RegisterRequestDTO request = mock(RegisterRequestDTO.class);
+        when(request.getPassword()).thenReturn("Pass1234");
+        when(request.getConfirmPassword()).thenReturn("Diferente");
+
+        assertThrows(IllegalArgumentException.class, () -> registerService.register(request));
+    }
+
+    @Test
+    void verifyEmail_tokenValido_verificaUsuario() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = EmailVerificationToken.builder()
+                .id(1L)
+                .token("valid-token")
+                .userId(userId)
+                .expiresAt(LocalDateTime.now().plusHours(1))
+                .used(false)
+                .build();
+
+        when(tokenRepository.findByToken("valid-token")).thenReturn(Optional.of(token));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        assertDoesNotThrow(() -> registerService.verifyEmail("valid-token"));
+    }
+
+    @Test
+    void verifyEmail_tokenNoExiste_lanzaInvalidToken() {
+        when(tokenRepository.findByToken("bad-token")).thenReturn(Optional.empty());
+        assertThrows(InvalidTokenException.class, () -> registerService.verifyEmail("bad-token"));
+    }
+
+    @Test
+    void verifyEmail_tokenUsado_lanzaInvalidToken() {
+        EmailVerificationToken token = EmailVerificationToken.builder()
+                .id(1L)
+                .token("used-token")
+                .userId(UUID.randomUUID())
+                .expiresAt(LocalDateTime.now().plusHours(1))
+                .used(true)
+                .build();
+        when(tokenRepository.findByToken("used-token")).thenReturn(Optional.of(token));
+        assertThrows(InvalidTokenException.class, () -> registerService.verifyEmail("used-token"));
+    }
+
+    @Test
+    void verifyEmail_tokenExpirado_lanzaInvalidToken() {
+        EmailVerificationToken token = EmailVerificationToken.builder()
+                .id(1L)
+                .token("expired-token")
+                .userId(UUID.randomUUID())
+                .expiresAt(LocalDateTime.now().minusHours(1))
+                .used(false)
+                .build();
+        when(tokenRepository.findByToken("expired-token")).thenReturn(Optional.of(token));
+        assertThrows(InvalidTokenException.class, () -> registerService.verifyEmail("expired-token"));
+    }
+
+    @Test
+    void resendVerificationEmail_usuarioExiste_enviaEmail() {
+        UUID userId = UUID.randomUUID();
+        when(userRepository.findByEmail("test@mail.escuelaing.edu.co"))
+                .thenReturn(Optional.of(buildUser(userId)));
+        when(tokenRepository.save(any())).thenReturn(null);
+        doNothing().when(emailService).sendVerificationEmail(any(), any());
+
+        assertDoesNotThrow(() -> registerService.resendVerificationEmail("test@mail.escuelaing.edu.co"));
+    }
+
+    @Test
+    void resendVerificationEmail_usuarioNoExiste_lanzaException() {
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,
+                () -> registerService.resendVerificationEmail("noexiste@mail.escuelaing.edu.co"));
+    }
+
+    private EmailVerificationToken buildOtpToken(UUID userId, String otp, boolean used,
+            LocalDateTime expiresAt, Integer failedAttempts, LocalDateTime blockedUntil) {
+        return EmailVerificationToken.builder()
+                .id(1L).token(otp).userId(userId)
+                .expiresAt(expiresAt).used(used)
+                .failedAttempts(failedAttempts).blockedUntil(blockedUntil)
+                .build();
+    }
+
+    @Test
+    void verifyOtp_codigoCorrecto_verificaCuenta() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser(userId)));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertTrue(response.isVerificationStatus());
+        assertTrue(response.isAccountStatus());
+        assertEquals(0, response.getExpirationTime());
+        assertFalse(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_codigoIncorrecto_retornaFalso() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        var response = registerService.verifyOtp(userId, "999999");
+
+        assertFalse(response.isVerificationStatus());
+        assertFalse(response.isAccountStatus());
+        assertTrue(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_tokenExpirado_retornaResendTrue() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().minusMinutes(1), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertFalse(response.isVerificationStatus());
+        assertTrue(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_tokenUsado_retornaResendTrue() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", true,
+                LocalDateTime.now().plusMinutes(5), 0, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertFalse(response.isVerificationStatus());
+        assertTrue(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_cuentaBloqueada_retornaBloqueo() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 0, LocalDateTime.now().plusMinutes(10));
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+
+        var response = registerService.verifyOtp(userId, "123456");
+
+        assertFalse(response.isVerificationStatus());
+        assertFalse(response.isResendAvailability());
+        assertTrue(response.getExpirationTime() > 0);
+    }
+
+    @Test
+    void verifyOtp_tercerintentoFallido_bloqueaCuenta() {
+        UUID userId = UUID.randomUUID();
+        EmailVerificationToken token = buildOtpToken(userId, "123456", false,
+                LocalDateTime.now().plusMinutes(5), 2, null);
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.of(token));
+        when(tokenRepository.save(any())).thenReturn(null);
+
+        var response = registerService.verifyOtp(userId, "999999");
+
+        assertFalse(response.isVerificationStatus());
+        assertFalse(response.isResendAvailability());
+    }
+
+    @Test
+    void verifyOtp_tokenNoExiste_lanzaException() {
+        UUID userId = UUID.randomUUID();
+        when(tokenRepository.findLatestByUserId(userId)).thenReturn(Optional.empty());
+        assertThrows(InvalidTokenException.class, () -> registerService.verifyOtp(userId, "123456"));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\com\aibert\dosw\application\service\UpdateProfileServiceTest.java
+======================================================================
+package com.aibert.dosw.application.service;
+
+import com.aibert.dosw.application.dto.request.PasswordChangeDTO;
+import com.aibert.dosw.application.dto.request.UpdateProfileDTO;
+import com.aibert.dosw.domain.exceptions.InvalidPasswordException;
+import com.aibert.dosw.domain.exceptions.UserNotFoundException;
+import com.aibert.dosw.domain.model.user.*;
+import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class UpdateProfileServiceTest {
+
+    @Mock private UserRepositoryPort userRepository;
+    @Mock private BCryptPasswordEncoder passwordEncoder;
+    @Mock private FileUploadService fileUploadService;
+    @InjectMocks private UpdateProfileService updateProfileService;
+
+    private final UUID userId = UUID.randomUUID();
+
+    private User buildUser() {
+        return User.builder()
+                .id(userId)
+                .fullName("Test User")
+                .email("test@mail.escuelaing.edu.co")
+                .password("hashedPassword")
+                .verified(true)
+                .role(Role.ESTUDIANTE)
+                .status(UserStatus.ACTIVO)
+                .profileComplete(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Test
+    void updateProfile_exitoso_actualizaNombre() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        when(dto.getFirstName()).thenReturn("Nuevo");
+        when(dto.getLastName()).thenReturn("Nombre");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, null));
+    }
+
+    @Test
+    void updateProfile_sinCambios_mantieneDatosActuales() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        when(dto.getFirstName()).thenReturn(null);
+        when(dto.getLastName()).thenReturn(null);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, null));
+    }
+
+    @Test
+    void updateProfile_fotoValida_actualizaFoto() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        when(dto.getFirstName()).thenReturn(null);
+        when(dto.getLastName()).thenReturn(null);
+        MockMultipartFile photo = new MockMultipartFile("photo", "foto.jpg", "image/jpeg", new byte[1024]);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(fileUploadService.upload(any())).thenReturn("http://url/foto.jpg");
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        assertDoesNotThrow(() -> updateProfileService.updateProfile(userId, dto, photo));
+    }
+
+    @Test
+    void updateProfile_fotoFormatoInvalido_lanzaException() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        MockMultipartFile photo = new MockMultipartFile("photo", "foto.gif", "image/gif", new byte[1024]);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.updateProfile(userId, dto, photo));
+    }
+
+    @Test
+    void updateProfile_fotoMayorA2MB_lanzaException() {
+        UpdateProfileDTO dto = mock(UpdateProfileDTO.class);
+        MockMultipartFile photo = new MockMultipartFile("photo", "foto.jpg", "image/jpeg", new byte[3 * 1024 * 1024]);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.updateProfile(userId, dto, photo));
+    }
+
+    @Test
+    void updateProfile_usuarioNoExiste_lanzaException() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> updateProfileService.updateProfile(userId, mock(UpdateProfileDTO.class), null));
+    }
+
+    @Test
+    void changePassword_exitoso_actualizaContrasena() {
+        PasswordChangeDTO dto = mock(PasswordChangeDTO.class);
+        when(dto.getCurrentPassword()).thenReturn("oldPass");
+        when(dto.getNewPassword()).thenReturn("NewPass123");
+        when(dto.getConfirmNewPassword()).thenReturn("NewPass123");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(passwordEncoder.matches("oldPass", "hashedPassword")).thenReturn(true);
+        when(passwordEncoder.matches("NewPass123", "hashedPassword")).thenReturn(false);
+        when(passwordEncoder.encode("NewPass123")).thenReturn("newHashed");
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        assertDoesNotThrow(() -> updateProfileService.changePassword(userId, dto));
+    }
+
+    @Test
+    void changePassword_nuevaIgualActual_lanzaException() {
+        PasswordChangeDTO dto = mock(PasswordChangeDTO.class);
+        when(dto.getCurrentPassword()).thenReturn("SamePass1");
+        when(dto.getNewPassword()).thenReturn("SamePass1");
+        when(dto.getConfirmNewPassword()).thenReturn("SamePass1");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(passwordEncoder.matches("SamePass1", "hashedPassword")).thenReturn(true);
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.changePassword(userId, dto));
+    }
+
+    @Test
+    void changePassword_contrasenaActualIncorrecta_lanzaException() {
+        PasswordChangeDTO dto = mock(PasswordChangeDTO.class);
+        when(dto.getCurrentPassword()).thenReturn("wrongPass");
+        when(dto.getNewPassword()).thenReturn("NewPass123");
+        when(dto.getConfirmNewPassword()).thenReturn("NewPass123");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(passwordEncoder.matches("wrongPass", "hashedPassword")).thenReturn(false);
+        assertThrows(InvalidPasswordException.class, () -> updateProfileService.changePassword(userId, dto));
+    }
+
+    @Test
+    void changePassword_contrasenasNoCoinciden_lanzaException() {
+        PasswordChangeDTO dto = mock(PasswordChangeDTO.class);
+        when(dto.getNewPassword()).thenReturn("NewPass123");
+        when(dto.getConfirmNewPassword()).thenReturn("Diferente");
+        assertThrows(IllegalArgumentException.class, () -> updateProfileService.changePassword(userId, dto));
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\com\aibert\dosw\entrypoints\advice\GlobalExceptionHandlerTest.java
+======================================================================
+package com.aibert.dosw.entrypoints.advice;
+
+import com.aibert.dosw.domain.exceptions.*;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class GlobalExceptionHandlerTest {
+
+    private final GlobalExceptionHandler handler = new GlobalExceptionHandler();
+
+    @Test
+    void handleEmailExists_retorna400() {
+        ResponseEntity<Map<String, String>> r = handler.handleEmailExists(new EmailAlreadyRegisteredException());
+        assertEquals(HttpStatus.BAD_REQUEST, r.getStatusCode());
+        assertTrue(r.getBody().containsKey("error"));
+    }
+
+    @Test
+    void handleInvalidToken_retorna400() {
+        ResponseEntity<Map<String, String>> r = handler.handleInvalidToken(new InvalidTokenException());
+        assertEquals(HttpStatus.BAD_REQUEST, r.getStatusCode());
+    }
+
+    @Test
+    void handleUserNotFound_retorna404() {
+        ResponseEntity<Map<String, String>> r = handler.handleUserNotFound(new UserNotFoundException());
+        assertEquals(HttpStatus.NOT_FOUND, r.getStatusCode());
+    }
+
+    @Test
+    void handleInvalidPassword_retorna401() {
+        ResponseEntity<Map<String, String>> r = handler.handleInvalidPassword(new InvalidPasswordException());
+        assertEquals(HttpStatus.UNAUTHORIZED, r.getStatusCode());
+    }
+
+    @Test
+    void handleIllegalArgument_retorna400() {
+        ResponseEntity<Map<String, String>> r = handler.handleIllegalArgument(new IllegalArgumentException("error"));
+        assertEquals(HttpStatus.BAD_REQUEST, r.getStatusCode());
+    }
+}
+
+
+======================================================================
+ARCHIVO: C:\Users\Daniel Rayo\IdeaProjects\grootology-profile-service\src\test\java\dosw\ProfileServiceApplicationTest.java
+======================================================================
+package dosw;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ProfileServiceApplicationTest {
+    @Test
+    void contextLoads() {
+    }
+}
+
+
