@@ -65,6 +65,6 @@ class ConfigAndEmailTest {
         OpenAPI openAPI = config.openAPI();
         assertNotNull(openAPI);
         assertNotNull(openAPI.getInfo());
-        assertEquals("AIBERT — Profile Service API", openAPI.getInfo().getTitle());
+        assertEquals("Profile Service API — AIBERT", openAPI.getInfo().getTitle());
     }
 }
