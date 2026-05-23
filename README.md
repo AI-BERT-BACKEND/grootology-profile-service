@@ -88,6 +88,7 @@
 <div align="center">
 
 | 👨‍💻 Integrante | 🎓 Rol | 📋 Responsabilidades |
+|:---|:---|:---|
 |Nicolás Parrado|Ingeniero dev-ops||
 |Mariana Parra|Ingeniero Frontend||
 |Jeyder Leon|Ingeniero Backend||
@@ -1142,7 +1143,7 @@ class RegisterServiceTest {
 ## 11. 📈 Evidencia de Análisis de Cobertura
 
 El análisis de cobertura se realiza con **JaCoCo** y se integra con **SonarCloud** para análisis estático de calidad en cada ejecución del pipeline CI/CD.
-
+![img_1.png](img_1.png)
 ### Configuración de JaCoCo
 
 - **Cobertura mínima:** 80% INSTRUCTION (falla el build si no se alcanza)
