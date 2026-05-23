@@ -87,14 +87,14 @@
 
 <div align="center">
 
-| 👨‍💻 Integrante | 🎓 Rol | 📋 Responsabilidades |
-|:---|:---|:---|
-|Nicolás Parrado|Ingeniero dev-ops||
-|Mariana Parra|Ingeniero Frontend||
-|Jeyder Leon|Ingeniero Backend||
-|Andres Sabogal|Documentación y diagramación||
-|Dana Leal|Marketing||
-|Juan Hernández|Ingeniero backend||
+| 👨‍💻 Integrante | 🎓 Rol | 📋 Responsabilidades                                                                                                                                              |
+|:---|:---|:------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|Nicolás Parrado|Ingeniero dev-ops| Despliegue de la aplicación, integración continua (CI/CD), manejo de bases de datos y monitoreo del sistema.                                                      |
+|Mariana Parra|Ingeniero Frontend| Diseño e implementación de la interfaz gráfica, experiencia de usuario (UX/UI), adaptación responsive y conexión con APIs.                                        |
+|Jeyder Leon|Ingeniero Backend| Desarrollo de la lógica del sistema, creación de APIs, manejo de autenticación y bases de datos.                                                                  |
+|Andres Sabogal|Documentación y diagramación| Elaboración y complementación de diagramas de componenetes, clases, contexto, secuencia y todo lo relacionado con la documentación del backend del microservicio. |
+|Dana Leal|Marketing| Gestión de redes sociales, promoción del proyecto, diseño de estrategias de difusión y análisis de usuarios objetivo.|                                                                                                                                                                  |
+|Juan Hernández|Ingeniero backend| Desarrollo de funcionalidades del servidor, optimización de rendimiento, integración de servicios y soporte en arquitectura backend.|                                                                                                                                                                  |
 
 </div>
 
