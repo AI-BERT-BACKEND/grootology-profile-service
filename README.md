@@ -22,7 +22,7 @@
 ![Azure](https://img.shields.io/badge/Azure-Container%20Apps-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
-![JaCoCo](https://img.shields.io/badge/JaCoCo-80%25%20min-D1322B?style=for-the-badge)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-90%25%20min-D1322B?style=for-the-badge)
 ![SonarCloud](https://img.shields.io/badge/SonarCloud-Quality-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white)
 
 ### 🏗️ Arquitectura
@@ -148,7 +148,7 @@ Mientras que el `auth-service` se encarga de emitir tokens JWT, este servicio al
 | **JUnit 5** | Framework de pruebas unitarias para validar casos de uso y dominio. |
 | **Mockito** | Simulación de dependencias (puertos, repositorios) en pruebas unitarias. |
 | **H2** | Base de datos en memoria para el perfil de pruebas en CI. |
-| **JaCoCo 0.8.x** | Generación de reportes de cobertura (mínimo 80% INSTRUCTION). |
+| **JaCoCo 0.8.x** | Generación de reportes de cobertura (mínimo 90% INSTRUCTION). |
 | **SonarCloud** | Análisis estático del código e identificación de vulnerabilidades. |
 | **Docker** | Contenedorización del microservicio (multistage build). |
 | **Azure Container Apps** | Entorno de ejecución en la nube donde se despliega el contenedor. |
@@ -1132,7 +1132,7 @@ class RegisterServiceTest {
 
 ### Criterios de aceptación de pruebas
 
-- ✅ **Cobertura mínima del 80%** en instrucciones (JaCoCo INSTRUCTION — RNF de calidad)
+- ✅ **Cobertura mínima del 90%** en instrucciones (JaCoCo INSTRUCTION — RNF de calidad)
 - ✅ **Todas las pruebas en estado PASSED** antes de merge a `develop`
 - ✅ **Cero errores de compilación** en el código de pruebas
 - ✅ **Estructura Given/When/Then** y `@DisplayName` descriptivo en cada test
@@ -1146,7 +1146,7 @@ El análisis de cobertura se realiza con **JaCoCo** y se integra con **SonarClou
 ![img_1.png](img_1.png)
 ### Configuración de JaCoCo
 
-- **Cobertura mínima:** 80% INSTRUCTION (falla el build si no se alcanza)
+- **Cobertura mínima:** 90% INSTRUCTION (falla el build si no se alcanza)
 - **Reporte:** generado automáticamente durante `./mvnw test`
 - **Artifact en CI:** subido como `jacoco-report-profile-run{N}-{SHA}` y disponible por 7 días
 
@@ -1172,7 +1172,7 @@ El análisis de cobertura se realiza con **JaCoCo** y se integra con **SonarClou
 
 | 📊 **Métrica** | 🎯 **Objetivo** |
 |:---|:---|
-| Cobertura de instrucciones | ≥ 80% |
+| Cobertura de instrucciones | ≥ 90% |
 | Code Smells Blocker | 0 |
 | Vulnerabilidades Critical | 0 |
 | Imports wildcard (`*`) | 0 — todos explícitos |

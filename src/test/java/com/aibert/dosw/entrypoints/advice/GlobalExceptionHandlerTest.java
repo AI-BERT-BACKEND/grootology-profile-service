@@ -2,8 +2,14 @@ package com.aibert.dosw.entrypoints.advice;
 
 import com.aibert.dosw.domain.exceptions.*;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.DataBinder;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.WebDataBinder;
 
 import java.util.Map;
 
@@ -42,5 +48,19 @@ class GlobalExceptionHandlerTest {
     void handleIllegalArgument_retorna400() {
         ResponseEntity<Map<String, String>> r = handler.handleIllegalArgument(new IllegalArgumentException("error"));
         assertEquals(HttpStatus.BAD_REQUEST, r.getStatusCode());
+    }
+
+    @Test
+    void handleValidation_retornaPrimerError() throws Exception {
+        Object target = new Object();
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(target, "target");
+        bindingResult.addError(new FieldError("target", "email", "Debe ser correo institucional"));
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null, bindingResult);
+
+        ResponseEntity<Map<String, String>> response = handler.handleValidation(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().get("error").contains("email"));
     }
 }

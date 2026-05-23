@@ -2,6 +2,9 @@ package com.aibert.dosw.application.dto;
 
 import com.aibert.dosw.application.dto.request.*;
 import com.aibert.dosw.application.dto.response.AcademicProfileResponseDTO;
+import com.aibert.dosw.application.dto.response.OtpVerificationResponseDTO;
+import com.aibert.dosw.application.dto.response.RegisterResponseDTO;
+import com.aibert.dosw.application.dto.response.UserAuthDTO;
 import com.aibert.dosw.application.dto.response.UserSummaryDTO;
 import com.aibert.dosw.domain.model.user.*;
 import org.junit.jupiter.api.Test;
@@ -100,6 +103,17 @@ class DtoConstructionTest {
     }
 
     @Test
+    void userAuthUpdateDTO_getters() {
+        UserAuthUpdateDTO dto = new UserAuthUpdateDTO();
+        LocalDateTime lockTime = LocalDateTime.now().plusMinutes(10);
+        ReflectionTestUtils.setField(dto, "failedAttempts", 2);
+        ReflectionTestUtils.setField(dto, "lockedUntil", lockTime);
+
+        assertEquals(2, dto.getFailedAttempts());
+        assertEquals(lockTime, dto.getLockedUntil());
+    }
+
+    @Test
     void userSummaryDTO_builder() {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
@@ -147,5 +161,64 @@ class DtoConstructionTest {
         assertFalse(dto.getCurrentlyWorking());
         assertEquals(Availability.NOCHE, dto.getAvailability());
         assertTrue(dto.isProfileComplete());
+    }
+
+    @Test
+    void registerResponseDTO_builder() {
+        UUID id = UUID.randomUUID();
+        RegisterResponseDTO dto = RegisterResponseDTO.builder()
+                .id(id)
+                .role("ESTUDIANTE")
+                .message("Registro exitoso")
+                .build();
+
+        assertEquals(id, dto.getId());
+        assertEquals("ESTUDIANTE", dto.getRole());
+        assertEquals("Registro exitoso", dto.getMessage());
+    }
+
+    @Test
+    void otpVerificationResponseDTO_builder() {
+        OtpVerificationResponseDTO dto = OtpVerificationResponseDTO.builder()
+                .verificationStatus(true)
+                .accountStatus(true)
+                .expirationTime(0)
+                .resendAvailability(false)
+                .build();
+
+        assertTrue(dto.isVerificationStatus());
+        assertTrue(dto.isAccountStatus());
+        assertEquals(0, dto.getExpirationTime());
+        assertFalse(dto.isResendAvailability());
+    }
+
+    @Test
+    void userAuthDTO_builder() {
+        UUID id = UUID.randomUUID();
+        LocalDateTime lockTime = LocalDateTime.now().plusMinutes(5);
+
+        UserAuthDTO dto = UserAuthDTO.builder()
+                .id(id)
+                .fullName("Test User")
+                .email("test@mail.escuelaing.edu.co")
+                .password("hashed")
+                .verified(true)
+                .role(Role.ADMIN)
+                .status(UserStatus.ACTIVO)
+                .profileComplete(true)
+                .failedAttempts(1)
+                .lockedUntil(lockTime)
+                .build();
+
+        assertEquals(id, dto.getId());
+        assertEquals("Test User", dto.getFullName());
+        assertEquals("test@mail.escuelaing.edu.co", dto.getEmail());
+        assertEquals("hashed", dto.getPassword());
+        assertTrue(dto.isVerified());
+        assertEquals(Role.ADMIN, dto.getRole());
+        assertEquals(UserStatus.ACTIVO, dto.getStatus());
+        assertTrue(dto.isProfileComplete());
+        assertEquals(1, dto.getFailedAttempts());
+        assertEquals(lockTime, dto.getLockedUntil());
     }
 }

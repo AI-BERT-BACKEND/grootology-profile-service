@@ -12,6 +12,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -57,6 +59,20 @@ class ConfigAndEmailTest {
         BCryptPasswordEncoder encoder = config.passwordEncoder();
         assertNotNull(encoder);
         assertTrue(encoder.matches("test", encoder.encode("test")));
+    }
+
+    @Test
+    void securityConfig_corsConfigurationSource_configuraCorsEsperado() {
+        SecurityConfig config = new SecurityConfig();
+        CorsConfigurationSource source = config.corsConfigurationSource();
+        CorsConfiguration cors = source.getCorsConfiguration(new org.springframework.mock.web.MockHttpServletRequest("GET", "/api/profile"));
+
+        assertNotNull(cors);
+        assertTrue(cors.getAllowedOriginPatterns().contains("*"));
+        assertTrue(cors.getAllowedMethods().contains("GET"));
+        assertTrue(cors.getAllowedMethods().contains("POST"));
+        assertTrue(cors.getAllowedHeaders().contains("*"));
+        assertTrue(Boolean.TRUE.equals(cors.getAllowCredentials()));
     }
 
     @Test
