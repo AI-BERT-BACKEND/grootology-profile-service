@@ -34,6 +34,26 @@ public class ProfileController {
     private final DeleteAccountUseCase deleteAccountUseCase;
 
     @Operation(
+            summary = "Get academic profile",
+            description = "Retrieves the academic information of a user, including career, semester, GPA, current subjects, academic goals, availability, and study hours.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Academic profile retrieved successfully."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized. Valid JWT token required."),
+            @ApiResponse(responseCode = "404", description = "User or academic profile not found.")
+    })
+    @GetMapping("/{userId}/academic")
+    public ResponseEntity<AcademicProfileResponseDTO> getAcademicProfile(
+            @Parameter(
+                description = "UUID of the user whose academic profile will be retrieved",
+                example = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                schema = @Schema(type = "string", format = "uuid")
+            ) @PathVariable UUID userId) {
+        return ResponseEntity.ok(academicProfileUseCase.getAcademicProfile(userId));
+    }
+
+    @Operation(
             summary = "Save or update academic profile",
             description = "Stores or updates the academic information of a user, including career, semester, GPA, current subjects, academic goals, availability, and study hours. This data is used by other services such as Gamification to personalize the experience.",
             security = @SecurityRequirement(name = "bearerAuth")
