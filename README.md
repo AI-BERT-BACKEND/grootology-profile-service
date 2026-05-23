@@ -1356,9 +1356,10 @@ docker run -p 1501:8081 \
   -e DB_USER=profile_user \
   -e DB_PASSWORD=profile_pass \
   -e JWT_SECRET=mi_secreto_jwt \
-  -e MAIL_HOST=smtp.example.com \
-  -e MAIL_USERNAME=usuario@ejemplo.com \
-  -e MAIL_PASSWORD=mi_password_smtp \
+  -e MAIL_HOST=smtp.office365.com \
+  -e MAIL_PORT=587 \
+  -e MAIL_USERNAME=usuario@outlook.com \
+  -e MAIL_PASSWORD=app_password_outlook \
   profile-service
 ```
 
@@ -1424,10 +1425,10 @@ jobs:
 | `DB_PASSWORD` | Contraseña de la base de datos |
 | `JWT_SECRET` | Clave secreta para validar los tokens JWT |
 | `APP_BASE_URL` | URL base del servicio para los enlaces de email |
-| `MAIL_HOST` | Host del servidor SMTP |
-| `MAIL_PORT` | Puerto del servidor SMTP |
-| `MAIL_USERNAME` | Usuario del servidor SMTP |
-| `MAIL_PASSWORD` | Contraseña del servidor SMTP |
+| `MAIL_HOST` | Host SMTP de Outlook/Microsoft 365 (`smtp.office365.com`) |
+| `MAIL_PORT` | Puerto SMTP (`587`, STARTTLS) |
+| `MAIL_USERNAME` | Correo de Outlook/Microsoft 365 remitente |
+| `MAIL_PASSWORD` | App Password o contraseña SMTP habilitada para esa cuenta |
 
 ---
 
@@ -1480,13 +1481,16 @@ SPRING_PROFILES_ACTIVE=local   # local | test (H2) | qa | prod
 APP_BASE_URL=http://localhost:1501
 
 # Mail SMTP (requerido en todos los perfiles)
-MAIL_HOST=smtp.example.com
+MAIL_HOST=smtp.office365.com
 MAIL_PORT=587
-MAIL_USERNAME=tu_usuario_smtp
-MAIL_PASSWORD=tu_password_smtp
+MAIL_USERNAME=tu_correo@outlook.com
+MAIL_PASSWORD=tu_app_password_outlook
 ```
 
 > ⚠️ **Nunca subas el archivo `.env` al repositorio.** Está incluido en `.gitignore`. Las variables de producción se configuran como **Secrets** en GitHub Actions y se inyectan en Azure Container Apps.
+
+> ℹ️ Para cuentas personales Outlook/Hotmail, también puedes usar `smtp-mail.outlook.com` con puerto `587` y STARTTLS.
+> Si la cuenta tiene MFA, usa **App Password** y valida que SMTP AUTH esté habilitado en Microsoft 365.
 
 > ⚠️ **`JWT_SECRET` debe ser idéntica** en `auth-service` y `profile-service`, ya que el `JwtAuthFilter` de este servicio valida los tokens emitidos por `auth-service`.
 
