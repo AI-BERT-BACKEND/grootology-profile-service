@@ -257,17 +257,33 @@ El microservicio implementa **Arquitectura Hexagonal (Ports & Adapters)**:
 
 ### 5.1 Diagrama de Clases
 
-![Diagrama_de_Clases.png](docs/uml/Diagrama_de_Clases.png)
+![Diagrama Clases Profile.png](docs/uml/Diagrama%20Clases%20Profile.png)
 
-El diagrama de clases sigue la arquitectura hexagonal dividida en cuatro capas: **Entrypoints**, **Aplicación**, **Dominio** e **Infraestructura**. El dominio contiene las entidades `User`, `EmailVerificationToken` y los enums `Career`, `Role`, `UserStatus`, `AcademicGoal`, `Availability`, más las interfaces de 5 puertos `in` y 4 puertos `out`. La capa de infraestructura implementa esos puertos con adaptadores JPA sin que el dominio lo sepa.
+El diagrama de clases del **Profile Service** sigue una arquitectura orientada al dominio, organizada principalmente en las capas **Application** y **Domain**, separando la lógica de negocio de los mecanismos externos de persistencia y comunicación.
+
+La capa **Application** contiene servicios como `RegisterService`, `UpdateProfileService`, `AcademicProfileService` y `PasswordResetService`, responsables de procesos como registro de usuarios, actualización de información personal, configuración académica y recuperación de contraseña. Estos servicios interactúan mediante puertos como `UserRepositoryPort`, `TokenRepositoryPort` y `EmailServicePort`, permitiendo desacoplar la lógica de aplicación de la infraestructura.
+
+La capa **Domain** tiene como entidad principal a `User`, que concentra tanto información personal como académica del estudiante, incluyendo carrera, semestre, promedio, meta académica y estado del perfil. Además, el dominio incluye entidades auxiliares como `PasswordResetToken` y `EmailVerificationToken`, utilizadas para validación de correo y recuperación segura de contraseñas.
+
+El modelo también define enumeradores como `Role`, `UserStatus`, `Career` y `AcademicGoal`, permitiendo controlar permisos, estados y objetivos académicos dentro de la plataforma.
+
+El diagrama refleja una arquitectura modular y desacoplada, facilitando mantenibilidad, escalabilidad y separación clara de responsabilidades dentro del microservicio.
 
 ---
 
 ### 5.2 Diagrama de Componentes
 
-![Diagrama_de_componentes.png](docs/uml/Diagrama_de_componentes.png)
+![Diagrama componentes Profile.png](docs/uml/Diagrama%20componentes%20Profile.png)
 
-El diagrama muestra la organización interna del `profile-service`. Cada flujo sigue el patrón en capas: `Controller → UseCase/Service → RepositoryAdapter`, con `MapStruct Mappers` encargados de la conversión entre capas. El `SmtpEmailService` implementa el puerto `EmailServicePort` para el envío de correos OTP.
+El diagrama de componentes del **Profile Service** representa la interacción entre los módulos encargados de registro, gestión de perfiles, recuperación de contraseña y configuración académica dentro de AI.BERT.
+
+El flujo inicia desde `APIGateway`, que redirige las solicitudes hacia `ProfileController` y `AdminUserController`. Estos componentes delegan las operaciones a distintos casos de uso como `RegisterUseCase`, `AcademicProfileUseCase`, `PasswordResetUseCase` y `UpdateProfileUseCase`.
+
+La lógica principal se implementa en servicios como `RegisterService`, `AcademicProfileService`, `PasswordResetService` y `UpdateProfileService`, encargados de validaciones, actualización de información, generación de tokens y carga de archivos mediante `FileUploadService`.
+
+La persistencia se maneja a través de adaptadores y repositorios como `UserRepositoryAdapter`, `TokenRepositoryAdapter` y `PasswordResetTokenAdapter`, desacoplando la lógica de negocio del acceso a PostgreSQL mediante mappers y repositorios JPA.
+
+Además, el microservicio publica eventos mediante `Kafka Events`, permitiendo comunicación asíncrona con otros módulos del ecosistema, como gamificación, estadísticas, gestión académica y gestión de tareas, manteniendo una arquitectura modular y desacoplada.
 
 ---
 
@@ -275,7 +291,13 @@ El diagrama muestra la organización interna del `profile-service`. Cada flujo s
 
 ![Diagrama_secuencia_register.png](docs/uml/Diagrama_secuencia_register.png)
 
-El flujo completo del registro: desde que llegan los datos hasta que se persiste el usuario y se envía el OTP al correo institucional. Incluye la validación de email único y la encriptación BCrypt de la contraseña.
+El diagrama de secuencia del **Profile Service** representa el flujo de registro de usuarios dentro de AI.BERT. El proceso inicia cuando el usuario envía la solicitud de registro al `AuthController`, el cual delega la operación a `RegisterUseCase` y posteriormente a `RegisterService`.
+
+`RegisterService` valida si el correo ya existe mediante `UserRepositoryPort` y `UserRepositoryAdapter`. Si el usuario ya se encuentra registrado, se genera la excepción `EmailAlreadyRegisteredException`. En caso contrario, se construye la entidad `User` y se almacena en el sistema.
+
+Posteriormente, el servicio genera un `EmailVerificationToken`, el cual es persistido mediante `TokenRepositoryPort`, y utiliza `EmailServicePort` para enviar el correo de verificación al usuario.
+
+Finalmente, la respuesta es encapsulada en `RegisterResponseDTO` y retornada al cliente, manteniendo un flujo desacoplado entre controladores, casos de uso, servicios y adaptadores, alineado con la arquitectura hexagonal del microservicio.
 
 ---
 
@@ -283,7 +305,13 @@ El flujo completo del registro: desde que llegan los datos hasta que se persiste
 
 ![Diagrama_secuencia_updateProfile.png](docs/uml/Diagrama_secuencia_updateProfile.png)
 
-El flujo de actualización de datos personales (username, foto de perfil), validando el JWT del usuario autenticado antes de persistir los cambios.
+El diagrama de secuencia del **Profile Service** representa el flujo de actualización del perfil de usuario dentro de AI.BERT. El proceso inicia cuando el usuario envía la solicitud al `ProfileController`, el cual delega la operación a `UpdateProfileUseCase` y posteriormente a `UpdateProfileService`.
+
+`UpdateProfileService` consulta la información del usuario mediante `UserRepositoryPort` y `UserRepositoryAdapter`. Si el usuario no existe, se genera la excepción `UserNotFoundException`. En caso contrario, se actualizan los datos personales y académicos del perfil.
+
+Durante el flujo también interviene `FileUploadService`, encargado de gestionar la carga y almacenamiento de la foto de perfil del usuario. Finalmente, la información actualizada se persiste utilizando el repositorio correspondiente.
+
+El diagrama evidencia una separación clara entre controladores, casos de uso, servicios y adaptadores, manteniendo un flujo desacoplado y alineado con la arquitectura hexagonal del microservicio.
 
 ---
 
@@ -291,7 +319,13 @@ El flujo de actualización de datos personales (username, foto de perfil), valid
 
 ![Diagrama_secuencia_saveAcademicProfile.png](docs/uml/Diagrama_secuencia_saveAcademicProfile.png)
 
-El flujo de guardado o actualización del perfil académico, incluyendo la validación de los campos académicos y la marcación del `profileComplete` en `true` al completarse por primera vez.
+El diagrama de secuencia del **Profile Service** representa el flujo de configuración y almacenamiento del perfil académico de un usuario dentro de AI.BERT. El proceso inicia cuando el usuario envía la solicitud al `ProfileController`, el cual delega la operación a `AcademicProfileUseCase` y posteriormente a `AcademicProfileService`.
+
+`AcademicProfileService` consulta la información del usuario mediante `UserRepositoryPort` y `UserRepositoryAdapter`. Si el usuario no existe, se genera la excepción `UserNotFoundException`. En caso contrario, se actualizan los datos académicos y personales del perfil, como semestre actual, promedio, horas de estudio y foto de perfil.
+
+Posteriormente, la información actualizada es persistida utilizando el repositorio correspondiente y la respuesta se construye mediante `AcademicProfileResponseDTO`, retornando el resultado al cliente.
+
+El diagrama evidencia una separación clara entre controladores, casos de uso, servicios y adaptadores, manteniendo un flujo desacoplado y alineado con la arquitectura hexagonal del microservicio.
 
 ---
 
