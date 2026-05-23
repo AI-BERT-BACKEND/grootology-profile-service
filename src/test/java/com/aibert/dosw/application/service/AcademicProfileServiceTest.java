@@ -44,7 +44,7 @@ class AcademicProfileServiceTest {
         when(dto.getDailyStudyHours()).thenReturn(4);
         when(dto.getCurrentGpa()).thenReturn(3.8);
         when(dto.getSubjects()).thenReturn(List.of("Cálculo", "Álgebra", "Física"));
-        when(dto.getAcademicGoal()).thenReturn(AcademicGoal.MEJORAR_PROMEDIO);
+        when(dto.getAcademicGoal()).thenReturn(AcademicGoal.EXCELENCIA);
         when(dto.getCurrentlyEmployed()).thenReturn(false);
         when(dto.getStudyAvailability()).thenReturn(Availability.TARDE);
         return dto;

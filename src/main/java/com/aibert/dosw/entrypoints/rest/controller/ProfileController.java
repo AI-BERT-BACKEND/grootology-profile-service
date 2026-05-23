@@ -55,7 +55,7 @@ public class ProfileController {
 
     @Operation(
             summary = "Save or update academic profile",
-            description = "Stores or updates the academic information of a user, including career, semester, GPA, current subjects, academic goals, availability, and study hours. This data is used by other services such as Gamification to personalize the experience.",
+            description = "Stores or updates the academic information of a user.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
@@ -64,12 +64,6 @@ public class ProfileController {
             @ApiResponse(responseCode = "401", description = "Unauthorized. Valid JWT token required."),
             @ApiResponse(responseCode = "404", description = "User not found.")
     })
-    @GetMapping("/{userId}/academic")
-    public ResponseEntity<AcademicProfileResponseDTO> getAcademicProfile(
-            @PathVariable UUID userId) {
-        return ResponseEntity.ok(academicProfileUseCase.getAcademicProfile(userId));
-    }
-
     @PutMapping("/{userId}/academic")
     public ResponseEntity<AcademicProfileResponseDTO> saveAcademicProfile(
             @Parameter(
