@@ -7,10 +7,12 @@ import com.aibert.dosw.domain.model.user.User;
 import com.aibert.dosw.domain.ports.in.AcademicProfileUseCase;
 import com.aibert.dosw.domain.ports.out.UserRepositoryPort;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AcademicProfileService implements AcademicProfileUseCase {
@@ -67,8 +69,13 @@ public class AcademicProfileService implements AcademicProfileUseCase {
 
     @Override
     public AcademicProfileResponseDTO getAcademicProfile(UUID userId) {
+        log.info("Consultando perfil académico del usuario {}", userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
+
+        if (!user.isProfileComplete()) {
+            throw new UserNotFoundException("El perfil académico del usuario no ha sido completado");
+        }
 
         return AcademicProfileResponseDTO.builder()
                 .career(user.getCareer() != null ? user.getCareer().name() : null)
