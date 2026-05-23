@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface AcademicProfileUseCase {
     AcademicProfileResponseDTO saveAcademicProfile(UUID userId, AcademicProfileDTO dto);
+    AcademicProfileResponseDTO getAcademicProfile(UUID userId);
 }

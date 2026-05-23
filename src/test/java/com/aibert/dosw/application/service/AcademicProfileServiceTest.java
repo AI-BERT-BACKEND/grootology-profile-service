@@ -39,25 +39,23 @@ class AcademicProfileServiceTest {
 
     private AcademicProfileDTO buildDto() {
         AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
-        when(dto.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
-        when(dto.getDoubleDegreeCareer()).thenReturn(null);
+        when(dto.getSecondaryCareer()).thenReturn(null);
         when(dto.getCurrentSemester()).thenReturn(3);
-        when(dto.getWeeklyHours()).thenReturn(20);
         when(dto.getDailyStudyHours()).thenReturn(4);
         when(dto.getCurrentGpa()).thenReturn(3.8);
-        when(dto.getCurrentSubjects()).thenReturn(List.of("Cálculo", "Álgebra", "Física"));
+        when(dto.getSubjects()).thenReturn(List.of("Cálculo", "Álgebra", "Física"));
         when(dto.getAcademicGoal()).thenReturn(AcademicGoal.MEJORAR_PROMEDIO);
-        when(dto.getCurrentlyWorking()).thenReturn(false);
-        when(dto.getAvailability()).thenReturn(Availability.TARDE);
+        when(dto.getCurrentlyEmployed()).thenReturn(false);
+        when(dto.getStudyAvailability()).thenReturn(Availability.TARDE);
         return dto;
     }
 
     @Test
     void saveAcademicProfile_dobleCarreraIgualPrincipal_lanzaException() {
+        User user = buildUser();
         AcademicProfileDTO dto = mock(AcademicProfileDTO.class);
-        when(dto.getCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
-        when(dto.getDoubleDegreeCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
+        when(dto.getSecondaryCareer()).thenReturn(Career.INGENIERIA_SISTEMAS);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         assertThrows(IllegalArgumentException.class,
                 () -> academicProfileService.saveAcademicProfile(userId, dto));
     }
@@ -70,7 +68,7 @@ class AcademicProfileServiceTest {
         AcademicProfileResponseDTO response = academicProfileService.saveAcademicProfile(userId, buildDto());
 
         assertNotNull(response);
-        assertEquals(20, response.getWeeklyHours());
+        assertEquals(28, response.getWeeklyHours()); // 4 * 7 = 28
         assertEquals(3.8, response.getCurrentGpa());
         assertEquals(4, response.getDailyStudyHours());
         assertEquals(Availability.TARDE, response.getAvailability());
@@ -81,7 +79,7 @@ class AcademicProfileServiceTest {
     @Test
     void saveAcademicProfile_conDobleCarrera_retornaDatos() {
         AcademicProfileDTO dto = buildDto();
-        when(dto.getDoubleDegreeCareer()).thenReturn(Career.MATEMATICAS);
+        when(dto.getSecondaryCareer()).thenReturn(Career.MATEMATICAS);
         when(userRepository.findById(userId)).thenReturn(Optional.of(buildUser()));
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 

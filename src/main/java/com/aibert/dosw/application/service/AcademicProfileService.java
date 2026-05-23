@@ -22,7 +22,7 @@ public class AcademicProfileService implements AcademicProfileUseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
-        if (dto.getDoubleDegreeCareer() != null && dto.getDoubleDegreeCareer().equals(dto.getCareer())) {
+        if (dto.getSecondaryCareer() != null && dto.getSecondaryCareer().equals(user.getCareer())) {
             throw new IllegalArgumentException("La doble carrera no puede ser igual a la carrera principal");
         }
 
@@ -34,16 +34,16 @@ public class AcademicProfileService implements AcademicProfileUseCase {
                 .verified(user.isVerified())
                 .role(user.getRole())
                 .status(user.getStatus())
-                .career(dto.getCareer())
-                .doubleDegreeCareer(dto.getDoubleDegreeCareer())
+                .career(user.getCareer()) // mantener carrera original del registro
+                .doubleDegreeCareer(dto.getSecondaryCareer())
                 .currentSemester(dto.getCurrentSemester())
-                .weeklyHours(dto.getWeeklyHours())
+                .weeklyHours(calculateWeeklyHours(dto.getDailyStudyHours()))
                 .dailyStudyHours(dto.getDailyStudyHours())
                 .currentGpa(dto.getCurrentGpa())
-                .currentSubjects(dto.getCurrentSubjects())
+                .currentSubjects(dto.getSubjects())
                 .academicGoal(dto.getAcademicGoal())
-                .currentlyWorking(dto.getCurrentlyWorking())
-                .availability(dto.getAvailability())
+                .currentlyWorking(dto.getCurrentlyEmployed())
+                .availability(dto.getStudyAvailability())
                 .profilePhotoUrl(user.getProfilePhotoUrl())
                 .profileComplete(true)
                 .passwordVersion(user.getPasswordVersion())
@@ -51,17 +51,41 @@ public class AcademicProfileService implements AcademicProfileUseCase {
                 .build());
 
         return AcademicProfileResponseDTO.builder()
-                .career(dto.getCareer().name())
-                .doubleDegreeCareer(dto.getDoubleDegreeCareer() != null ? dto.getDoubleDegreeCareer().name() : null)
+                .career(user.getCareer().name())
+                .doubleDegreeCareer(dto.getSecondaryCareer() != null ? dto.getSecondaryCareer().name() : null)
                 .currentSemester(dto.getCurrentSemester())
-                .weeklyHours(dto.getWeeklyHours())
+                .weeklyHours(calculateWeeklyHours(dto.getDailyStudyHours()))
                 .dailyStudyHours(dto.getDailyStudyHours())
                 .currentGpa(dto.getCurrentGpa())
-                .currentSubjects(dto.getCurrentSubjects())
+                .currentSubjects(dto.getSubjects())
                 .academicGoal(dto.getAcademicGoal())
-                .currentlyWorking(dto.getCurrentlyWorking())
-                .availability(dto.getAvailability())
+                .currentlyWorking(dto.getCurrentlyEmployed())
+                .availability(dto.getStudyAvailability())
                 .profileComplete(true)
                 .build();
+    }
+
+    @Override
+    public AcademicProfileResponseDTO getAcademicProfile(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        return AcademicProfileResponseDTO.builder()
+                .career(user.getCareer() != null ? user.getCareer().name() : null)
+                .doubleDegreeCareer(user.getDoubleDegreeCareer() != null ? user.getDoubleDegreeCareer().name() : null)
+                .currentSemester(user.getCurrentSemester())
+                .weeklyHours(user.getWeeklyHours())
+                .dailyStudyHours(user.getDailyStudyHours())
+                .currentGpa(user.getCurrentGpa())
+                .currentSubjects(user.getCurrentSubjects())
+                .academicGoal(user.getAcademicGoal())
+                .currentlyWorking(user.isCurrentlyWorking())
+                .availability(user.getAvailability())
+                .profileComplete(user.isProfileComplete())
+                .build();
+    }
+
+    private Integer calculateWeeklyHours(Integer dailyHours) {
+        return dailyHours * 7;
     }
 }

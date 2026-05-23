@@ -44,6 +44,12 @@ public class ProfileController {
             @ApiResponse(responseCode = "401", description = "Unauthorized. Valid JWT token required."),
             @ApiResponse(responseCode = "404", description = "User not found.")
     })
+    @GetMapping("/{userId}/academic")
+    public ResponseEntity<AcademicProfileResponseDTO> getAcademicProfile(
+            @PathVariable UUID userId) {
+        return ResponseEntity.ok(academicProfileUseCase.getAcademicProfile(userId));
+    }
+
     @PutMapping("/{userId}/academic")
     public ResponseEntity<AcademicProfileResponseDTO> saveAcademicProfile(
             @Parameter(
