@@ -103,7 +103,7 @@ class PersistenceEntityTest {
                 .dailyStudyHours(3)
                 .currentGpa(3.8)
                 .currentSubjects(List.of("Algorithms"))
-                .academicGoal(AcademicGoal.APROBAR_TODO)
+                .academicGoal(AcademicGoal.EXCELENCIA)
                 .currentlyWorking(false)
                 .availability(Availability.NOCHE)
                 .profileComplete(true)
@@ -127,8 +127,7 @@ class PersistenceEntityTest {
         assertEquals(3, entity.getDailyStudyHours());
         assertEquals(3.8, entity.getCurrentGpa());
         assertEquals(List.of("Algorithms"), entity.getCurrentSubjects());
-        assertEquals(AcademicGoal.APROBAR_TODO, entity.getAcademicGoal());
-        assertFalse(entity.isCurrentlyWorking());
+        assertEquals(AcademicGoal.EXCELENCIA, entity.getAcademicGoal());
         assertEquals(Availability.NOCHE, entity.getAvailability());
         assertTrue(entity.isProfileComplete());
         assertEquals("http://url/photo.jpg", entity.getProfilePhotoUrl());

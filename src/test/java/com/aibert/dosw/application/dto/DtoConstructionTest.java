@@ -18,27 +18,23 @@ class DtoConstructionTest {
     @Test
     void academicProfileDTO_getters() {
         AcademicProfileDTO dto = new AcademicProfileDTO();
-        ReflectionTestUtils.setField(dto, "career", Career.INGENIERIA_SISTEMAS);
-        ReflectionTestUtils.setField(dto, "doubleDegreeCareer", Career.INGENIERIA_INDUSTRIAL);
+        ReflectionTestUtils.setField(dto, "secondaryCareer", Career.INGENIERIA_INDUSTRIAL);
         ReflectionTestUtils.setField(dto, "currentSemester", 5);
         ReflectionTestUtils.setField(dto, "currentGpa", 3.8);
-        ReflectionTestUtils.setField(dto, "currentSubjects", List.of("Algorithms"));
-        ReflectionTestUtils.setField(dto, "academicGoal", AcademicGoal.APROBAR_TODO);
-        ReflectionTestUtils.setField(dto, "currentlyWorking", false);
-        ReflectionTestUtils.setField(dto, "availability", Availability.NOCHE);
+        ReflectionTestUtils.setField(dto, "subjects", List.of("Algorithms"));
+        ReflectionTestUtils.setField(dto, "academicGoal", AcademicGoal.EXCELENCIA);
+        ReflectionTestUtils.setField(dto, "currentlyEmployed", false);
+        ReflectionTestUtils.setField(dto, "studyAvailability", Availability.NOCHE);
         ReflectionTestUtils.setField(dto, "dailyStudyHours", 3);
-        ReflectionTestUtils.setField(dto, "weeklyHours", 15);
 
-        assertEquals(Career.INGENIERIA_SISTEMAS, dto.getCareer());
-        assertEquals(Career.INGENIERIA_INDUSTRIAL, dto.getDoubleDegreeCareer());
+        assertEquals(Career.INGENIERIA_INDUSTRIAL, dto.getSecondaryCareer());
         assertEquals(5, dto.getCurrentSemester());
         assertEquals(3.8, dto.getCurrentGpa());
-        assertEquals(List.of("Algorithms"), dto.getCurrentSubjects());
-        assertEquals(AcademicGoal.APROBAR_TODO, dto.getAcademicGoal());
-        assertFalse(dto.getCurrentlyWorking());
-        assertEquals(Availability.NOCHE, dto.getAvailability());
+        assertEquals(List.of("Algorithms"), dto.getSubjects());
+        assertEquals(AcademicGoal.EXCELENCIA, dto.getAcademicGoal());
+        assertFalse(dto.getCurrentlyEmployed());
+        assertEquals(Availability.NOCHE, dto.getStudyAvailability());
         assertEquals(3, dto.getDailyStudyHours());
-        assertEquals(15, dto.getWeeklyHours());
     }
 
     @Test
@@ -130,7 +126,7 @@ class DtoConstructionTest {
                 .dailyStudyHours(3)
                 .currentGpa(3.8)
                 .currentSubjects(List.of("Algorithms"))
-                .academicGoal(AcademicGoal.APROBAR_TODO)
+                .academicGoal(AcademicGoal.EXCELENCIA)
                 .currentlyWorking(false)
                 .availability(Availability.NOCHE)
                 .profileComplete(true)
@@ -143,7 +139,7 @@ class DtoConstructionTest {
         assertEquals(3, dto.getDailyStudyHours());
         assertEquals(3.8, dto.getCurrentGpa());
         assertEquals(List.of("Algorithms"), dto.getCurrentSubjects());
-        assertEquals(AcademicGoal.APROBAR_TODO, dto.getAcademicGoal());
+        assertEquals(AcademicGoal.EXCELENCIA, dto.getAcademicGoal());
         assertFalse(dto.getCurrentlyWorking());
         assertEquals(Availability.NOCHE, dto.getAvailability());
         assertTrue(dto.isProfileComplete());

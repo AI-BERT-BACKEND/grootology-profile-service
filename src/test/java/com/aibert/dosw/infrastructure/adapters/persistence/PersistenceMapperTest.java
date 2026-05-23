@@ -31,7 +31,7 @@ class PersistenceMapperTest {
                 .password("hashed").verified(true).role(Role.ESTUDIANTE).status(UserStatus.ACTIVO)
                 .career(Career.INGENIERIA_SISTEMAS).currentSemester(5).weeklyHours(15)
                 .dailyStudyHours(3).currentGpa(3.8).currentSubjects(List.of("Algorithms"))
-                .academicGoal(AcademicGoal.APROBAR_TODO).currentlyWorking(false)
+                .academicGoal(AcademicGoal.EXCELENCIA).currentlyWorking(false)
                 .availability(Availability.NOCHE).profileComplete(true)
                 .profilePhotoUrl("http://url/photo.jpg").userName("test.user")
                 .passwordVersion(1).createdAt(now).build();
@@ -55,7 +55,7 @@ class PersistenceMapperTest {
                 .password("hashed").verified(true).role(Role.ESTUDIANTE).status(UserStatus.ACTIVO)
                 .career(Career.INGENIERIA_SISTEMAS).currentSemester(5).weeklyHours(15)
                 .dailyStudyHours(3).currentGpa(3.8).currentSubjects(List.of("Algorithms"))
-                .academicGoal(AcademicGoal.APROBAR_TODO).currentlyWorking(false)
+                .academicGoal(AcademicGoal.EXCELENCIA).currentlyWorking(false)
                 .availability(Availability.NOCHE).profileComplete(true)
                 .profilePhotoUrl("http://url/photo.jpg").userName("test.user")
                 .passwordVersion(1).createdAt(LocalDateTime.now()).build();
